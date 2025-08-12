@@ -21,6 +21,10 @@
     button{background:#1abc9c;color:#fff;border:none;cursor:pointer;font-weight:700}
     button:hover{background:#16a085}
     main.content-col{flex:1;padding:20px}
+    #dashboard-stats{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+    #dashboard-stats .card{background:#e8f5e9;border:1px solid #b2dfdb;border-radius:10px;padding:10px 14px;min-width:110px;text-align:center}
+    #dashboard-stats .num{font-weight:700;color:#1b5e20}
+    #dashboard-stats .lbl{font-size:12px;color:#388e3c}
     .main-content{background:#fff;border-radius:10px;padding:20px;box-shadow:0 3px 8px rgba(0,0,0,.1);min-height:300px;transition:box-shadow .3s}
     .main-content:hover{box-shadow:0 5px 15px rgba(0,0,0,.15)}
     .main-content img{max-width:100%;border-radius:8px}
@@ -31,8 +35,7 @@
 <body>
   <header class="appbar">
     <div class="title">
-      <!-- SOP berada di /sop/, aset berada di /assets/ → gunakan ../assets/... -->
-      <img src="../assets/logo_puskesmas.png" alt="Logo Puskesmas Jagakarsa" class="header-logo" />
+      <img src="../assets/logo_puskesmas_jagakarsa.jpg" alt="Logo Puskesmas Jagakarsa" class="header-logo" />
       <span>PUSKESMAS JAGAKARSA</span>
     </div>
     <a href="../index.html" class="home-btn" aria-label="Kembali ke Landing Page">
@@ -78,13 +81,12 @@
   </footer>
 
   <script>
-    // ===== Data SOP (aset berada di ../assets dari folder /sop) =====
     const SOP_DATA = {
       klaster1: [
-        { value: 'kamar',     text: 'Pembersihan Kamar Mandi',                       img: '../assets/bagan_alir_pembersihan_kamar_mandi.png' },
-        { value: 'alat',      text: 'Pemeliharaan Alat Kesehatan',                   img: '../assets/bagan_alir_pemeliharaan_alat_kesehatan.png' },
-        { value: 'data',      text: 'Pengumpulan, Penyimpanan, Pencarian Data',      img: '../assets/bagan_alir_pengumpulan_penyimpanan_pencarian_data.png' },
-        { value: 'orientasi', text: 'Orientasi HD',                                   img: '../assets/infografis_bagan_orientasi_hd.png' }
+        { value: 'kamar','mandi','wc', text: 'Pembersihan Kamar Mandi', img: '../assets/bagan_alir_pembersihan_kamar_mandi.png', aliases: ['toilet','mandi','bersih'] },
+        { value: 'alat','alkes', text: 'Pemeliharaan Alat Kesehatan', img: '../assets/bagan_alir_pemeliharaan_alat_kesehatan.png', aliases: ['alkes','alat','maintenance'] },
+        { value: 'data', text: 'Pengumpulan, Penyimpanan, Pencarian Data', img: '../assets/bagan_alir_pengumpulan_penyimpanan_pencarian_data.png', aliases: ['arsip','rekam','penyimpanan','pencarian'] },
+        { value: 'orientasi','pegawai baru', text: 'Orientasi Pegawai Baru', img: '../assets/bagan_orientasi_pegawaibaru.png', aliases: ['pegawai','pegawai baru','orientasi'] }
       ],
       klaster2: [], klaster3: [], klaster4: [], klaster5: []
     };
@@ -98,13 +100,9 @@
 
     function renderStats(){
       const labels = { klaster1:'Klaster 1', klaster2:'Klaster 2', klaster3:'Klaster 3', klaster4:'Klaster 4', klaster5:'Klaster 5' };
-      elStats.innerHTML = '<div style="display:flex;gap:14px;flex-wrap:wrap">' +
-        Object.keys(SOP_DATA).map(k => (
-          `<div style="background:#e8f5e9;border:1px solid #b2dfdb;border-radius:10px;padding:10px 14px;min-width:110px;text-align:center">
-             <div style="font-weight:700;color:#1b5e20">${SOP_DATA[k].length}</div>
-             <div style="font-size:12px;color:#388e3c">${labels[k]}</div>
-           </div>`
-        )).join('') + '</div>';
+      elStats.innerHTML = Object.keys(SOP_DATA).map(k => (
+        `<div class="card"><div class="num">${SOP_DATA[k].length}</div><div class="lbl">${labels[k]}</div></div>`
+      )).join('');
     }
 
     function populateSopByKategori(kategori){
@@ -142,7 +140,6 @@
       `;
     }
 
-    // Pencarian responsif (live)
     function searchLive(){
       const q = (elSearch.value||'').toLowerCase().trim();
       if(!q){ tampilkanSOP(); return; }
@@ -150,7 +147,8 @@
       let first; let firstKlaster;
       Object.keys(SOP_DATA).forEach(kl => {
         SOP_DATA[kl].forEach(item => {
-          if(item.text.toLowerCase().includes(q)){
+          const hay = (item.text + ' ' + (item.aliases||[]).join(' ')).toLowerCase();
+          if(hay.includes(q)){
             if(!first){ first = item.value; firstKlaster = kl; }
             const opt = document.createElement('option');
             opt.value = item.value;
@@ -163,7 +161,6 @@
       else{ elMsg.innerHTML = '<p>🔍 Tidak ada SOP yang cocok.</p>'; }
     }
 
-    // Init & events
     renderStats();
     elKategori.value = 'klaster1';
     tampilkanSOP();

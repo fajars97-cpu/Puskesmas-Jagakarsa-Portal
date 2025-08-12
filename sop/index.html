@@ -5,133 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Penampil Bagan SOP</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background-color: #f4f8f9;
-      color: #333;
-    }
-    header.appbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(90deg, #1abc9c, #16a085);
-      padding: 12px 20px;
-      color: #fff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    }
-    header img.header-logo {
-      height: 60px;
-      border-radius: 6px;
-    }
-    header .title {
-      font-size: 1.3rem;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      letter-spacing: 0.5px;
-    }
-    .home-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      background: #fff;
-      color: #16a085;
-      padding: 8px 18px;
-      border-radius: 50px;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: all 0.3s ease;
-    }
-    .home-btn svg {
-      width: 22px;
-      height: 22px;
-    }
-    .home-btn:hover {
-      background: #ecf0f1;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-    }
-    .container {
-      display: flex;
-      min-height: calc(100vh - 80px);
-    }
-    aside.sidebar {
-      background-color: #eaf5f3;
-      padding: 20px;
-      width: 300px;
-      border-right: 1px solid #ccc;
-    }
-    .judul-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-    .judul-logo img {
-      height: 48px;
-      border-radius: 6px;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    input:focus, select:focus {
-      border-color: #1abc9c;
-      box-shadow: 0 0 5px rgba(26,188,156,0.5);
-      outline: none;
-    }
-    button {
-      background-color: #1abc9c;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background-color: #16a085;
-    }
-    main.content-col {
-      flex: 1;
-      padding: 20px;
-    }
-    .main-content {
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      min-height: 300px;
-      transition: box-shadow 0.3s ease;
-    }
-    .main-content:hover {
-      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-    }
-    footer {
-      background: linear-gradient(90deg, #1abc9c, #16a085);
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-      font-size: 0.9rem;
-    }
-    footer a {
-      color: #fff;
-      text-decoration: underline;
-    }
+    body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background-color:#f4f8f9;color:#333}
+    header.appbar{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#1abc9c,#16a085);padding:12px 20px;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.15)}
+    header img.header-logo{height:60px;border-radius:6px}
+    header .title{font-size:1.3rem;font-weight:bold;display:flex;align-items:center;gap:12px;letter-spacing:0.5px}
+    .home-btn{display:flex;align-items:center;gap:8px;text-decoration:none;background:#fff;color:#16a085;padding:8px 18px;border-radius:50px;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:all 0.3s ease}
+    .home-btn svg{width:22px;height:22px}
+    .home-btn:hover{background:#ecf0f1;transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.25)}
+    .container{display:flex;min-height:calc(100vh - 80px)}
+    aside.sidebar{background-color:#eaf5f3;padding:20px;width:300px;border-right:1px solid #ccc}
+    .judul-logo{display:flex;align-items:center;gap:10px;margin-bottom:20px;font-weight:bold;font-size:1.1rem}
+    .judul-logo img{height:48px;border-radius:6px}
+    input,select,button{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;font-size:0.95rem;transition:border-color 0.3s ease,box-shadow 0.3s ease}
+    input:focus,select:focus{border-color:#1abc9c;box-shadow:0 0 5px rgba(26,188,156,0.5);outline:none}
+    button{background-color:#1abc9c;color:white;border:none;cursor:pointer;font-weight:bold}
+    button:hover{background-color:#16a085}
+    main.content-col{flex:1;padding:20px}
+    .main-content{background-color:#fff;border-radius:10px;padding:20px;box-shadow:0 3px 8px rgba(0,0,0,0.1);min-height:300px;transition:box-shadow 0.3s ease}
+    .main-content img{max-width:100%;border-radius:8px}
+    footer{background:linear-gradient(90deg,#1abc9c,#16a085);color:#fff;text-align:center;padding:15px;font-size:0.9rem}
+    footer a{color:#fff;text-decoration:underline}
   </style>
 </head>
 <body>
   <header class="appbar">
     <div class="title">
-      <img src="https://i.imgur.com/UN39lb5.jpeg" alt="Logo Puskesmas Jagakarsa" class="header-logo">
+      <img src="assets/logo_puskesmas.png" alt="Logo Puskesmas Jagakarsa" class="header-logo">
       <span>PUSKESMAS JAGAKARSA</span>
     </div>
     <a href="../index.html" class="home-btn">
@@ -145,12 +44,11 @@
   <div class="container">
     <aside class="sidebar">
       <div class="judul-logo">
-        <img src="https://i.imgur.com/BEqTCH9.png" alt="Logo Sayur Sop">
+        <img src="assets/logo_sayur_sop.png" alt="Logo Sayur Sop">
         <span>SAYUR SOP</span>
       </div>
 
       <input type="text" id="searchInput" placeholder="🔎 Cari SOP...">
-      <button onclick="triggerSearchFromButton()">Cari</button>
 
       <select id="kategori-select" onchange="tampilkanSOP()">
         <option value="">-- Pilih Kategori --</option>
@@ -178,6 +76,90 @@
     <p>&copy; 2025 Puskesmas Jagakarsa | Hubungi kami: <a href="https://api.whatsapp.com/send/?phone=6281389685271">WhatsApp</a></p>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    const sopData = {
+      klaster1: [
+        { nama: "Bagan Pembersihan Kamar Mandi", file: "assets/bagan_alir_pembersihan_kamar_mandi.png", klaster: "klaster1" },
+        { nama: "Bagan Pemeliharaan Alat Kesehatan", file: "assets/bagan_alir_pemeliharaan_alat_kesehatan.png", klaster: "klaster1" },
+        { nama: "Bagan Pengumpulan Penyimpanan Pencarian Data", file: "assets/bagan_alir_pengumpulan_penyimpanan_pencarian_data.png", klaster: "klaster1" },
+        { nama: "Infografis Bagan Orientasi HD", file: "assets/infografis_bagan_orientasi_hd.png", klaster: "klaster1" }
+      ]
+    };
+
+    const elKategori = document.getElementById('kategori-select');
+    const elSop      = document.getElementById('sop-select');
+    const elSearch   = document.getElementById('searchInput');
+    const elMsg      = document.getElementById('messages');
+
+    function resetMessage(){
+      elMsg.innerHTML = '<p>📥 Pilih SOP dari sebelah kiri untuk menampilkan bagan alir.</p>';
+    }
+
+    function fillOptions(list, withCategoryLabel=false){
+      elSop.innerHTML = '<option value="">-- Pilih SOP --</option>';
+      list.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.file;
+        opt.textContent = withCategoryLabel ? `${item.nama} (${item.klaster.replace('klaster','Klaster ')})` : item.nama;
+        elSop.appendChild(opt);
+      });
+    }
+
+    function tampilkanSOP() {
+      const kategori = elKategori.value;
+      if (kategori && sopData[kategori]) {
+        fillOptions(sopData[kategori]);
+      } else {
+        elSop.innerHTML = '<option value="">-- Pilih SOP --</option>';
+      }
+      resetMessage();
+    }
+
+    function showSOP(byValue){
+      const file = byValue || elSop.value;
+      if (file) {
+        elMsg.innerHTML = `<img src="${file}" alt="SOP">`;
+      } else {
+        resetMessage();
+      }
+    }
+
+    // ===== Responsive search (langsung filter & tampilkan) =====
+    function searchLive(){
+      const q = (elSearch.value || '').trim().toLowerCase();
+      if(!q){
+        // kembali ke daftar sesuai kategori yang dipilih
+        tampilkanSOP();
+        return;
+      }
+      // cari ke semua klaster
+      const results = Object.keys(sopData).flatMap(k => sopData[k].map(it => ({...it, klaster:k})))
+        .filter(it => it.nama.toLowerCase().includes(q));
+
+      if(results.length === 0){
+        elSop.innerHTML = '<option value="">Tidak ada hasil</option>';
+        elMsg.innerHTML = '<p>🔍 Tidak ada SOP yang cocok.</p>';
+        return;
+      }
+
+      // tampilkan pilihan yang cocok & langsung pratinjau hasil pertama
+      fillOptions(results, true);
+      elSop.selectedIndex = 1; // pilih hasil pertama
+      // set kategori sesuai hasil pertama agar konsisten dengan dropdown kategori
+      elKategori.value = results[0].klaster;
+      showSOP(results[0].file);
+    }
+
+    function triggerSearchFromButton(){
+      searchLive();
+    }
+
+    // Event bindings
+    elSearch.addEventListener('input', searchLive); // responsif saat user mengetik
+    elSop.addEventListener('change', () => showSOP());
+
+    // Init awal
+    resetMessage();
+  </script>
 </body>
 </html>

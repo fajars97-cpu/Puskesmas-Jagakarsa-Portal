@@ -1,323 +1,352 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Penampil Bagan SOP</title>
   <style>
-    :root{--brand:#20733a;--ink:#122;--muted:#667;--surface:#fff;--gray:#f5f5f5;--border:#ddd;--footerH:56px}
+    /* ============ TOKENS ============ */
+    :root{
+      --brand:#20733a;               /* hijau puskesmas */
+      --ink:#0f172a;                 /* teks utama */
+      --muted:#667085;               /* teks sekunder */
+      --bg:#ffffff;                  /* latar */
+      --panel:#f6f8fa;               /* panel abu */
+      --border:#e5e7eb;              /* garis halus */
+      --radius:12px;
+      --footerH:56px;
+      --sheetH:74dvh;                /* tinggi sheet mobile */
+    }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{font-family:'Segoe UI',system-ui,Arial,sans-serif;margin:0;background:#fff;color:var(--ink)}
+    body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
 
-    /* APPBAR */
-    .appbar{width:100%;position:sticky;top:0;left:0;z-index:1200;background:var(--brand);color:#f8fefc;font-weight:600;letter-spacing:.5px;font-size:20px;box-shadow:0 2px 10px -6px #3336;padding:10px 16px;display:flex;align-items:center;gap:12px;justify-content:space-between;border-bottom:2px solid #e0e0e0}
-    .appbar-title{display:flex;align-items:center;gap:10px}
-    .appbar-logo{display:flex;align-items:center;gap:8px}
-    .appbar-logo img{height:38px;width:auto;border-radius:6px;background:#fff;padding:3px;border:1px solid #e6f0ea}
-    .appbar span{font-weight:700;letter-spacing:.5px;font-size:1.05em}
-    .home-btn,.menu-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--brand);text-decoration:none;padding:8px 14px;border-radius:999px;font-weight:700;border:2px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer}
-    .home-btn:hover,.menu-btn:hover{transform:translateY(-1px)}
+    /* ============ APPBAR ============ */
+    .appbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:var(--brand);color:#fff;border-bottom:1px solid #155a2b;box-shadow:0 2px 12px rgba(0,0,0,.12)}
+    .appbar-left{display:flex;align-items:center;gap:10px}
+    .brandmark{display:flex;align-items:center;gap:10px}
+    .brandmark img{height:36px;width:auto;border-radius:8px;background:#fff;padding:3px;border:1px solid #e6f0ea}
+    .title{font-weight:800;letter-spacing:.3px;font-size:clamp(14px,2.5vw,18px)}
+    .pill{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--brand);text-decoration:none;padding:8px 14px;border-radius:9999px;font-weight:700;border:2px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer}
+    .pill:hover{transform:translateY(-1px)}
 
-    /* LAYOUT */
-    .container{display:flex;min-height:calc(100vh - var(--footerH))}
-    .sidebar{width:28%;max-width:420px;background-color:var(--gray);padding:20px;border-right:1px solid #ccc;overflow-y:auto}
-    .content-col{flex:1 1 0%;display:flex;flex-direction:column;min-width:0}
+    /* ============ LAYOUT ============ */
+    .container{display:flex;min-height:calc(100dvh - var(--footerH))}
+    @supports not (height: 100dvh){ .container{min-height:calc(100vh - var(--footerH))} }
+    .sidebar{width:28%;max-width:420px;background:var(--panel);padding:18px;border-right:1px solid var(--border);overflow-y:auto}
+    .content{flex:1 1 auto;display:flex;flex-direction:column;min-width:0}
 
-    /* DASHBOARD */
-    #dashboard-stats{display:flex;gap:16px;border-bottom:2px solid #e0e0e0;background:#fff;z-index:2;box-shadow:0 4px 8px -8px #bdbdbd;padding:8px 12px;position:sticky;top:0}
-    #dashboard-stats>div{background:#e8f5e9;border:1.5px solid #b2dfdb;border-radius:12px;padding:12px 16px;min-width:110px;text-align:center;box-shadow:0 2px 8px 0 rgba(80,160,120,0.05)}
-    #dashboard-stats .stat-count{font-size:18px;font-weight:700;color:#1b5e20}
-    #dashboard-stats .stat-label{font-size:12px;color:#388e3c;margin-top:4px}
+    /* ============ DASHBOARD CHIPS ============ */
+    #dashboard-stats{display:flex;gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:5;box-shadow:0 6px 12px -12px rgba(0,0,0,.3)}
+    #dashboard-stats{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    #dashboard-stats::-webkit-scrollbar{display:none}
+    .chip{flex:0 0 auto;min-width:122px;text-align:center;padding:12px 14px;border-radius:14px;border:1px solid #b2dfdb;background:#e8f5e9;box-shadow:0 2px 8px rgba(80,160,120,.06)}
+    .chip .stat-count{font-weight:800;color:#1b5e20}
+    .chip .stat-label{font-size:12px;color:#2e7d32;margin-top:3px}
 
-    /* CONTENT */
-    .main-content{flex-grow:1;overflow-y:auto;height:0;padding:16px;background:#fff}
-    .main-content{padding-bottom:calc(var(--footerH) + 8px)}
+    /* ============ MAIN ============ */
+    .main{flex:1 1 auto;overflow:auto;padding:16px}
+    .msg{min-height:120px;animation:fade .35s}
+    .sop-img{margin-top:10px;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.06);cursor:zoom-in;max-width:100%;height:auto;background:#fff}
 
-    /* SIDEBAR WIDGETS */
-    .judul-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-weight:700;font-size:18px;color:#007b83}
-    .judul-logo img{height:40px;width:auto;border-radius:7px;background:#fff;border:1.5px solid #b2dfdb}
+    /* ============ SIDEBAR ============ */
+    .org{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-weight:800;color:#007b83}
+    .org img{height:40px;width:auto;border-radius:8px;background:#fff;border:1px solid #b2dfdb}
     label{font-size:12px;color:var(--muted)}
-    select,input,button{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;margin:8px 0;font-size:14px}
-    button{background-color:#43a047;color:#fff;border:none;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;justify-content:center;transition:background .15s,box-shadow .18s,transform .14s}
-    button:hover{background:#388e3c;box-shadow:0 2px 10px -3px #43a04744}
-    button:active{box-shadow:0 4px 16px -3px #43a04744;transform:translateY(1px)}
-    ul#sop-list{list-style:none;padding:0;margin-top:10px}
-    ul#sop-list li{cursor:pointer;padding:10px 12px;background:#fff;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;font-size:15px;transition:background .18s,box-shadow .18s,transform .12s}
+    input,select,button{width:100%;padding:12px 12px;border-radius:10px;border:1px solid var(--border);margin:8px 0;font-size:15px}
+    button{background:var(--brand);color:#fff;font-weight:800;display:flex;align-items:center;gap:8px;justify-content:center;transition:transform .15s,box-shadow .2s}
+    button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(32,115,58,.25)}
+    button:active{transform:translateY(0)}
+    ul#sop-list{list-style:none;padding:0;margin:10px 0}
+    ul#sop-list li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:#fff;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);font-size:15px;transition:background .18s,box-shadow .18s}
     ul#sop-list li:hover,ul#sop-list li.active{background:#f2f4f5}
-    ul#sop-list li:active{box-shadow:0 2px 12px -3px #8884;transform:translateY(1px)}
-    .alert{color:#b94a48;background:#f2dede;padding:10px;border-radius:8px;margin-bottom:10px;border:1px solid #eed3d7;font-size:14px}
+    ul#sop-list li .chev{opacity:.5}
+    .alert{color:#b94a48;background:#fef2f2;padding:10px 12px;border-radius:10px;margin-bottom:10px;border:1px solid #fecaca;font-size:14px}
 
-    img{max-width:100%;height:auto;border:1px solid #ccc;border-radius:8px;background:#fff}
-    @keyframes fadein{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    #messages{animation:fadein .45s;min-height:120px}
+    /* ============ FOOTER ============ */
+    footer{position:fixed;inset:auto 0 0 0;height:calc(var(--footerH) + env(safe-area-inset-bottom));display:grid;place-items:center;background:#f9f9f9;border-top:1px solid var(--border);color:#6b7280;font-size:14px;padding-bottom:env(safe-area-inset-bottom)}
 
-    /* FOOTER */
-    footer{width:100%;text-align:center;padding:16px 8px;color:#888;font-size:14px;background:#f9f9f9;border-top:1px solid #eee;position:fixed;left:0;bottom:0;z-index:10;height:var(--footerH)}
+    /* ============ MOBILE BOTTOM SHEET ============ */
+    .bottom-toggle{position:fixed;left:50%;transform:translate(-50%,0);transition:transform .25s,opacity .25s;bottom:calc(var(--footerH) + 10px + env(safe-area-inset-bottom));z-index:45;display:none;align-items:center;gap:8px;height:44px;padding:10px 12px;border-radius:9999px;border:none;background:var(--brand);color:#fff;font-weight:800;box-shadow:0 12px 30px rgba(32,115,58,.28);white-space:nowrap;max-width:220px;width:auto}
+    .bottom-toggle svg{width:18px;height:18px;flex:0 0 auto}
+    .bottom-toggle .label{display:inline}
+    @media (max-width:380px){ .bottom-toggle .label{display:none} }
+    .bottom-toggle svg{flex:0 0 auto}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(1px);z-index:43;display:none}
+    .overlay.show{display:block}
+    .bottom-toggle.hide{opacity:0;transform:translate(-50%,16px);pointer-events:none}
+    .sheet{position:fixed;left:0;right:0;bottom:0;z-index:44;background:#fff;border-top-left-radius:18px;border-top-right-radius:18px;box-shadow:0 -10px 40px rgba(0,0,0,.25);transform:translateY(100%);transition:transform .28s ease;will-change:transform;overscroll-behavior-y:contain}
+    .sheet.open{transform:translateY(0)}
+    .sheet.dragging{transition:none;user-select:none}
+    .sheet-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 2px 10px -10px rgba(0,0,0,.25);user-select:none}
+    .sheet-head,.drag{touch-action:none}
+    .sheet-head,.drag{touch-action:none}
+    .drag{width:36px;height:4px;border-radius:999px;background:#d1d5db;margin:6px auto}
+    .sheet-body{max-height:var(--sheetH);overflow:auto;padding:12px 16px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 
-    /* RESPONSIVE */
-    @media (max-width: 1024px){
-      .sidebar{width:36%}
-      #dashboard-stats{gap:12px}
-      #dashboard-stats>div{padding:10px 12px}
-    }
+    /* ============ MOBILE ============ */
+    @media (max-width: 1024px){ .sidebar{width:36%} }
     @media (max-width: 900px){
-      .appbar{font-size:16px;padding:10px 12px}
-      .container{flex-direction:column}
-      .content-col{min-width:0}
-      .sidebar{position:fixed;inset:0 auto 0 0;width:84%;max-width:none;transform:translateX(-100%);transition:transform .25s ease;z-index:1400;box-shadow:6px 0 18px rgba(0,0,0,.12)}
-      .sidebar.open{transform:translateX(0)}
-      .sidebar{border-right:none;border-bottom:1px solid #ccc}
-      .overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:saturate(120%) blur(1px);z-index:1300;display:none}
-      .overlay.show{display:block}
-      .home-btn{padding:8px 12px}
-      .menu-btn{display:inline-flex}
-      #dashboard-stats{position:relative;top:auto;box-shadow:none;border-bottom:0;padding:8px 0}
+      .appbar{padding:10px 12px}
+      /* Sembunyikan sidebar, pindah filter ke bottom sheet */
+      .sidebar{display:none}
+      .bottom-toggle{display:inline-flex}
     }
-    @media (min-width: 1200px){
-      .sidebar{width:26%}
-      .main-content{padding:20px 24px}
-    }
+
+    /* ============ ANIM ============ */
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @media (prefers-reduced-motion: reduce){ .pill, .sop-img{transition:none} }
+    /* Close (ghost icon) */
+    .close-btn{width:44px;height:44px;display:grid;place-items:center;border-radius:9999px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06);color:#111827}
+    .close-btn:hover{background:#f8fafc}
+    .close-btn svg{width:18px;height:18px}
   </style>
 </head>
 <body>
-
-<div class="appbar">
-  <div class="appbar-title">
-    <div class="appbar-logo">
-      <img src="../assets/logo_sayur_sop.png" alt="Logo Sayur SOP" decoding="async" loading="lazy" onerror="imgFallback(this,'Logo aplikasi tidak ditemukan')">
-      <span>Penampil Bagan Alir SOP</span>
+  <header class="appbar">
+    <div class="appbar-left">
+      <div class="brandmark">
+        <img src="../assets/logo_sayur_sop.png" alt="Logo Sayur SOP" loading="lazy" decoding="async" onerror="imgFallback(this,'Logo aplikasi tidak ditemukan')" />
+        <div class="title">Penampil Bagan Alir SOP</div>
+      </div>
     </div>
-  </div>
-  <div style="display:flex;gap:10px;align-items:center">
-    <button class="menu-btn" type="button" onclick="toggleSidebar()" aria-label="Buka menu" title="Buka Menu" style="display:none">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      Menu
-    </button>
-    <a class="home-btn" href="../index.html" title="Kembali ke Landing Page" aria-label="Home">
+    <a class="pill" href="../index.html" aria-label="Home">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-10.5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Home
     </a>
-  </div>
-</div>
+  </header>
 
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <div class="overlay" id="overlay" onclick="toggleSheet(false)"></div>
 
-<div class="container">
-  <aside class="sidebar" id="sidebar">
-    <div class="judul-logo">
-      <img src="../assets/logo_puskesmas.png" alt="Logo Puskesmas Jagakarsa" decoding="async" loading="lazy" onerror="imgFallback(this,'Logo Puskesmas tidak ditemukan')">
-      <span>PUSKESMAS JAGAKARSA</span>
-    </div>
-
-    <div id="alert-box" style="display:none;" class="alert"></div>
-
-    <label for="searchInput">Pencarian</label>
-    <input type="text" id="searchInput" placeholder="🔎 Cari SOP..." aria-label="Cari SOP" />
-    <button onclick="triggerSearchFromButton()" aria-label="Tombol Cari">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
-      Cari
-    </button>
-
-    <label for="kategori-select">Kategori</label>
-    <select id="kategori-select" onchange="tampilkanSOP()" aria-label="Pilih Kategori">
-      <option value="">-- Pilih Kategori --</option>
-      <option value="klaster1">Klaster 1</option>
-      <option value="klaster2">Klaster 2</option>
-      <option value="klaster3">Klaster 3</option>
-      <option value="klaster4">Klaster 4</option>
-      <option value="klaster5">Klaster 5</option>
-    </select>
-
-    <label for="sop-select">SOP</label>
-    <select id="sop-select" onchange="showSOP()" aria-label="Pilih SOP">
-      <option value="">-- Pilih SOP --</option>
-    </select>
-
-    <ul id="sop-list" style="display:none;"></ul>
-  </aside>
-
-  <div class="content-col">
-    <div id="dashboard-stats"></div>
-    <main class="main-content">
-      <div id="messages">
-        <p>📥 Pilih SOP dari sebelah kiri untuk menampilkan bagan alir.</p>
+  <div class="container">
+    <!-- Sidebar desktop -->
+    <aside class="sidebar" id="sidebar">
+      <div class="org">
+        <img src="../assets/logo_puskesmas.png" alt="Logo Puskesmas Jagakarsa" loading="lazy" decoding="async" onerror="imgFallback(this,'Logo Puskesmas tidak ditemukan')" />
+        <span>PUSKESMAS JAGAKARSA</span>
       </div>
-    </main>
+
+      <!-- Semua kontrol filter dibungkus agar bisa dipindahkan ke bottom sheet saat mobile -->
+      <div id="filtersWrap">
+        <div id="alert-box" style="display:none" class="alert"></div>
+
+        <label for="searchInput">Pencarian</label>
+        <input type="text" id="searchInput" placeholder="🔎 Cari SOP..." aria-label="Cari SOP" />
+        <button onclick="triggerSearchFromButton()" aria-label="Tombol Cari">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
+          Cari
+        </button>
+
+        <label for="kategori-select">Kategori</label>
+        <select id="kategori-select" onchange="tampilkanSOP()" aria-label="Pilih Kategori">
+          <option value="">-- Pilih Kategori --</option>
+          <option value="klaster1">Klaster 1</option>
+          <option value="klaster2">Klaster 2</option>
+          <option value="klaster3">Klaster 3</option>
+          <option value="klaster4">Klaster 4</option>
+          <option value="klaster5">Klaster 5</option>
+        </select>
+
+        <label for="sop-select">SOP</label>
+        <select id="sop-select" onchange="showSOP()" aria-label="Pilih SOP">
+          <option value="">-- Pilih SOP --</option>
+        </select>
+
+        <ul id="sop-list" style="display:none"></ul>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div id="dashboard-stats"></div>
+      <main class="main">
+        <div id="messages" class="msg">
+          <p>📥 Pilih SOP dari sebelah kiri untuk menampilkan bagan alir.</p>
+        </div>
+      </main>
+    </section>
   </div>
-</div>
 
-<script>
-const originalSopOptions = {
-  klaster1: [
-    { value: "alat", text: "Pemeliharaan Alat Kesehatan" },
-    { value: "kamar", text: "Pembersihan Kamar Mandi" },
-    { value: "orientasi", text: "Orientasi Pegawai Baru" },
-    { value: "pengumpulan", text: "Pengumpulan, Penyimpanan, Pencarian Data" }
-  ],
-  klaster2: [],
-  klaster3: [],
-  klaster4: [],
-  klaster5: []
-};
+  <!-- Toggle button + Bottom sheet (muncul hanya di mobile via CSS) -->
+  <button id="filterToggle" class="bottom-toggle" aria-controls="filterSheet" aria-expanded="false" onclick="toggleSheet()" aria-label="Buka pencarian SOP">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <span class="label">Pencarian SOP</span>
+  </button>
 
-let sopOptions = JSON.parse(JSON.stringify(originalSopOptions));
+  <section id="filterSheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="drag"></div>
+    <div class="sheet-head">
+      <strong id="sheetTitle">Pencarian & Filter</strong>
+      <button class="close-btn" onclick="toggleSheet(false)" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="sheetBody" class="sheet-body"><!-- filtersWrap akan dipindahkan ke sini di mobile --></div>
+  </section>
 
-function imgFallback(el, msg){
-  if(!el) return;
-  el.outerHTML = `<div style="display:inline-flex;align-items:center;justify-content:center;height:${el.height||40}px;min-width:120px;padding:6px 10px;border:1px dashed #c8d6cf;border-radius:8px;color:#456;font-size:12px;background:#f6fbf8">${msg}</div>`;
-}
+  <footer>Created by Fajar Setyawan 221788</footer>
 
-// Dashboard statistik
-function renderDashboardStats() {
-  const statsDiv = document.getElementById('dashboard-stats');
-  if (!statsDiv) return;
-  const klasterNames = { klaster1: "Klaster 1", klaster2: "Klaster 2", klaster3: "Klaster 3", klaster4: "Klaster 4", klaster5: "Klaster 5" };
-  let html = '';
-  Object.keys(sopOptions).forEach(klaster => {
-    html += `<div>
-      <div class="stat-count">${sopOptions[klaster].length}</div>
-      <div class="stat-label">${klasterNames[klaster]}</div>
-    </div>`;
-  });
-  statsDiv.innerHTML = html;
-}
+  <script>
+  const KLASTERS = ['klaster1','klaster2','klaster3','klaster4','klaster5'];
+  const SOPS = [
+    { id:'alat',       judul:'Pemeliharaan Alat Kesehatan',                 klaster:'klaster1', img:'../assets/bagan_alir_pemeliharaan_alat_kesehatan.png',          icon:'📊' },
+    { id:'kamar',      judul:'Pembersihan Kamar Mandi',                     klaster:'klaster1', img:'../assets/bagan_alir_pembersihan_kamar_mandi.png',               icon:'🚿' },
+    { id:'orientasi',  judul:'Orientasi Pegawai Baru',                      klaster:'klaster1', img:'../assets/bagan_orientasi_pegawaibaru.png',                      icon:'👥' },
+    { id:'pengumpulan',judul:'Pengumpulan, Penyimpanan, Pencarian Data',    klaster:'klaster1', img:'../assets/bagan_alir_pengumpulan_penyimpanan_pencarian_data.png', icon:'🗂️' }
+  ];
+  const sopsById = SOPS.reduce((m,s)=>{ m[s.id]=s; return m; }, {});
 
-function tampilkanSOP() {
-  document.getElementById("searchInput").value = '';
-  hideAlert();
-  const kategori = document.getElementById("kategori-select").value;
-  const sopSelect = document.getElementById("sop-select");
+  function imgFallback(el,msg){ if(!el) return; el.outerHTML = `<div style="display:inline-flex;align-items:center;justify-content:center;height:${el.height||40}px;min-width:120px;padding:6px 10px;border:1px dashed #c8d6cf;border-radius:8px;color:#456;font-size:12px;background:#f6fbf8">${msg}</div>`; }
+  function openFull(el){ if(!el) return; const url = el.src || el.getAttribute('data-src'); if(url) window.open(url,'_blank','noopener'); }
 
-  sopSelect.innerHTML = '<option value="">-- Pilih SOP --</option>';
-  let hasil = [];
-
-  if (kategori && sopOptions[kategori]) {
-    hasil = sopOptions[kategori];
-    hasil.forEach(item => {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.text = item.text;
-      sopSelect.appendChild(option);
-    });
+  function renderDashboardStats(){
+    const wrap = document.getElementById('dashboard-stats'); if(!wrap) return;
+    const names = {klaster1:'Klaster 1',klaster2:'Klaster 2',klaster3:'Klaster 3',klaster4:'Klaster 4',klaster5:'Klaster 5'};
+    wrap.innerHTML = KLASTERS.map(k=>{
+      const count = SOPS.filter(s=>s.klaster===k).length;
+      return `<div class="chip"><div class="stat-count">${count}</div><div class="stat-label">${names[k]}</div></div>`;
+    }).join('');
   }
 
-  const list = document.getElementById("sop-list");
-  list.innerHTML = hasil.map(item => `<li onclick="pilihSOP('${item.value}')">${item.text}</li>`).join('');
-  list.style.display = hasil.length ? 'block' : 'none';
-}
-
-function cariSOP() {
-  hideAlert();
-  const input = document.getElementById("searchInput").value.toLowerCase();
-  const sopSelect = document.getElementById("sop-select");
-  const kategori = document.getElementById("kategori-select").value;
-
-  sopSelect.innerHTML = '<option value="">-- Pilih SOP --</option>';
-  let hasil = [];
-
-  if (input) {
-    Object.keys(sopOptions).forEach(klaster => {
-      sopOptions[klaster].forEach(item => {
-        if (item.text.toLowerCase().includes(input)) {
-          hasil.push({...item, kategori: klaster});
-        }
-      });
-    });
-  } else if (kategori && sopOptions[kategori]) {
-    hasil = sopOptions[kategori].map(item => ({...item, kategori}));
+  function tampilkanSOP(){
+    document.getElementById('searchInput').value=''; hideAlert();
+    const kategori = document.getElementById('kategori-select').value;
+    const sopSelect = document.getElementById('sop-select');
+    sopSelect.innerHTML = '<option value="">-- Pilih SOP --</option>';
+    const hasil = kategori ? SOPS.filter(s=>s.klaster===kategori) : [];
+    hasil.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.text=s.judul; sopSelect.appendChild(o); });
+    const list = document.getElementById('sop-list');
+    list.innerHTML = hasil.map(s=>`<li onclick="pilihSOP('${s.id}')">${s.judul}<span class="chev">›</span></li>`).join('');
+    list.style.display = hasil.length ? 'block' : 'none';
   }
 
-  hasil.forEach(item => {
-    const option = document.createElement("option");
-    option.value = item.value;
-    option.text = item.text + (item.kategori ? " (" + item.kategori.replace('klaster','Klaster ') + ")" : "");
-    sopSelect.appendChild(option);
-  });
-
-  const list = document.getElementById("sop-list");
-  list.innerHTML = hasil.map(item => `<li onclick=\"pilihSOP('${item.value}')\">${item.text}${item.kategori ? " <span style='color:#888;font-size:12px;'>(" + item.kategori.replace('klaster','Klaster ') + ")</span>" : ""}</li>`).join('');
-  list.style.display = hasil.length ? 'block' : 'none';
-}
-
-function triggerSearchFromButton() {
-  cariSOP();
-  const sopSelect = document.getElementById("sop-select");
-  if (sopSelect.options.length > 1) {
-    sopSelect.selectedIndex = 1;
-    showSOP();
+  function cariSOP(){
+    hideAlert();
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const sopSelect = document.getElementById('sop-select');
+    const kategori = document.getElementById('kategori-select').value;
+    sopSelect.innerHTML = '<option value="">-- Pilih SOP --</option>';
+    let hasil = [];
+    if(q){ hasil = SOPS.filter(s=> s.judul.toLowerCase().includes(q)); }
+    else if(kategori){ hasil = SOPS.filter(s=> s.klaster===kategori); }
+    hasil.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.text = s.judul + (s.klaster?` (${s.klaster.replace('klaster','Klaster ')})`:'' ); sopSelect.appendChild(o); });
+    const list = document.getElementById('sop-list');
+    list.innerHTML = hasil.map(s=>`<li onclick=\"pilihSOP('${s.id}')\">${s.judul}${s.klaster?` <span style='color:#888;font-size:12px;'>(${s.klaster.replace('klaster','Klaster ')})</span>`:''}<span class='chev'>›</span></li>`).join('');
+    list.style.display = hasil.length ? 'block' : 'none';
   }
-}
 
-function pilihSOP(nama) {
-  const sopSelect = document.getElementById("sop-select");
-  for (let i = 0; i < sopSelect.options.length; i++) {
-    if (sopSelect.options[i].value === nama) {
-      sopSelect.selectedIndex = i;
-      showSOP();
-      break;
+
+  function triggerSearchFromButton(){
+    cariSOP();
+    const sopSelect = document.getElementById('sop-select');
+    if(sopSelect.options.length > 1){ sopSelect.selectedIndex = 1; showSOP(); }
+  }
+
+  function pilihSOP(nama){
+    const sopSelect = document.getElementById('sop-select');
+    for(let i=0;i<sopSelect.options.length;i++){ if(sopSelect.options[i].value===nama){ sopSelect.selectedIndex=i; showSOP(); break; }}
+    document.querySelectorAll('#sop-list li').forEach(li=>{ li.classList.remove('active'); if(li.textContent.trim().startsWith(sopSelect.options[sopSelect.selectedIndex].text)) li.classList.add('active'); });
+  }
+
+  function showSOP(){
+    const v = document.getElementById('sop-select').value; const msg=document.getElementById('messages'); msg.style.opacity=0;
+    setTimeout(()=>{
+      const sop = sopsById[v];
+      let html='';
+      if(sop){
+        const icon = sop.icon || '';
+        html = `${icon} ${sop.judul}:<br><img src="${sop.img}" class="sop-img" alt="Bagan Alir ${sop.judul}" loading="lazy" decoding="async" onerror="imgFallback(this,'Gambar tidak ditemukan')" onclick="openFull(this)">`;
+      }
+      msg.innerHTML = html || '<p>❌ SOP belum tersedia.</p>';
+      msg.style.animation='none'; void msg.offsetWidth; msg.style.animation=null; msg.style.opacity=1;
+      // Auto-close filter sheet on mobile after selecting a SOP
+      if (isMobile()) toggleSheet(false);
+    },140);
+  }
+
+  function showAlert(m){const b=document.getElementById('alert-box'); b.style.display='block'; b.innerText=m}
+  function hideAlert(){const b=document.getElementById('alert-box'); b.style.display='none'; b.innerText=''}
+
+  // ===== Bottom Sheet Logic (mobile) =====
+  function isMobile(){return window.matchMedia('(max-width: 900px)').matches}
+  function placeFilters(){
+    const wrap=document.getElementById('filtersWrap');
+    const sheetBody=document.getElementById('sheetBody');
+    const sidebar=document.getElementById('sidebar');
+    if(!wrap||!sheetBody||!sidebar) return;
+    if(isMobile()){
+      if(wrap.parentElement!==sheetBody) sheetBody.appendChild(wrap);
+      const btn=document.getElementById('filterToggle'); if(btn) btn.style.display='inline-flex';
+    }else{
+      if(wrap.parentElement!==sidebar) sidebar.appendChild(wrap);
+      const btn=document.getElementById('filterToggle'); if(btn) btn.style.display='none';
+      toggleSheet(false);
     }
   }
-  const lis = document.querySelectorAll("#sop-list li");
-  lis.forEach(li => {
-    li.classList.remove("active");
-    if (li.textContent === sopSelect.options[sopSelect.selectedIndex].text) {
-      li.classList.add("active");
+  function toggleSheet(open){
+    const sheet=document.getElementById('filterSheet');
+    const overlay=document.getElementById('overlay');
+    const btn=document.getElementById('filterToggle');
+    if(!sheet) return;
+    const show=(open===undefined)? !sheet.classList.contains('open') : open;
+    sheet.classList.toggle('open',show);
+    overlay.classList.toggle('show',show);
+    if(btn){
+      btn.setAttribute('aria-expanded', show? 'true':'false');
+      btn.classList.toggle('hide', show);
     }
-  });
-}
-
-function showSOP() {
-  const sop = document.getElementById("sop-select").value;
-  const messages = document.getElementById("messages");
-  messages.style.opacity = 0;
-  setTimeout(() => {
-    let content = "";
-    if (sop === "alat") {
-      content = `📊 Bagan Alir SOP Pemeliharaan Alat:<br><img src="../assets/bagan_alir_pemeliharaan_alat_kesehatan.png" decoding="async" loading="lazy" onerror="imgFallback(this,'Gambar tidak ditemukan')">`;
-    } else if (sop === "kamar") {
-      content = `🚿 Bagan Alir SOP Pembersihan Kamar Mandi:<br><img src="../assets/bagan_alir_pembersihan_kamar_mandi.png" decoding="async" loading="lazy" onerror="imgFallback(this,'Gambar tidak ditemukan')">`;
-    } else if (sop === "orientasi") {
-      content = `👥 Bagan Alir SOP Orientasi Pegawai Baru:<br><img src="../assets/bagan_orientasi_pegawaibaru.png" decoding="async" loading="lazy" onerror="imgFallback(this,'Gambar tidak ditemukan')">`;
-    } else if (sop === "pengumpulan") {
-      content = `🗂️ Bagan Alir Pengumpulan, Penyimpanan, Pencarian Data:<br><img src="../assets/bagan_alir_pengumpulan_penyimpanan_pencarian_data.png" decoding="async" loading="lazy" onerror="imgFallback(this,'Gambar tidak ditemukan')">`;
+    document.body.style.overflow = show ? 'hidden' : '';
+    if(!show){
+      sheet.style.transform='';
+      if(overlay) overlay.style.opacity='';
     }
-    messages.innerHTML = content || "<p>❌ SOP belum tersedia.</p>";
-    messages.style.animation = "none";
-    void messages.offsetWidth; // trigger reflow
-    messages.style.animation = null;
-    messages.style.opacity = 1;
-  }, 150);
-}
-
-function showAlert(msg){const box=document.getElementById("alert-box");box.style.display="block";box.innerText=msg}
-function hideAlert(){const box=document.getElementById("alert-box");box.style.display="none";box.innerText=""}
-
-// Mobile sidebar controls
-function toggleSidebar(){const sb=document.getElementById('sidebar');const ov=document.getElementById('overlay');sb.classList.toggle('open');ov.classList.toggle('show')}
-function closeSidebar(){const sb=document.getElementById('sidebar');const ov=document.getElementById('overlay');sb.classList.remove('open');ov.classList.remove('show')}
-
-// event listener
-const si=document.getElementById("searchInput");
-si.addEventListener("input", cariSOP);
-si.addEventListener("keydown", function(e){ if(e.key === "Enter") triggerSearchFromButton(); });
-
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeSidebar(); });
-
-document.addEventListener('DOMContentLoaded', function() {
-  // Show menu button on mobile
-  if (window.matchMedia('(max-width: 900px)').matches) {
-    const btn = document.querySelector('.menu-btn');
-    if (btn) btn.style.display = 'inline-flex';
   }
-  document.getElementById("kategori-select").value = "klaster1";
-  tampilkanSOP();
-  renderDashboardStats();
-});
-</script>
 
-<footer>
-  Created by Fajar Setyawan 221788
-</footer>
+  // Auto-hide toggle on scroll (mobile) & swipe-down to close sheet
+  function setupAutoHide(){
+    const btn=document.getElementById('filterToggle');
+    const scroller=document.querySelector('.main')||window;
+    let last=0; let ticking=false;
+    const getPos=()=> scroller===window? window.scrollY : scroller.scrollTop;
+    const onScroll=()=>{
+      if(!btn) return; const curr=getPos();
+      if(!ticking){ window.requestAnimationFrame(()=>{ if(curr>last+12) btn.classList.add('hide'); else if(curr<last-12) btn.classList.remove('hide'); last=curr; ticking=false; }); ticking=true; }
+    };
+    scroller.addEventListener('scroll', onScroll, {passive:true});
+  }
+  function setupSheetGestures(){
+    const sheet=document.getElementById('filterSheet');
+    const body=document.getElementById('sheetBody');
+    if(!sheet||!body) return;
+    let startY=0, currY=0, dragging=false, t0=0;
+    const start=(e)=>{ const t=e.touches? e.touches[0] : e; const trg=e.target; const inHead = trg.closest('.sheet-head') || trg.closest('.drag'); const atTop = body.scrollTop <= 2; if(!inHead && !atTop) return; dragging=true; startY=t.clientY; currY=0; t0=Date.now(); sheet.classList.add('dragging'); };
+    const move=(e)=>{ if(!dragging) return; const t=e.touches? e.touches[0] : e; currY=Math.max(0, t.clientY-startY); if(currY>0){ sheet.style.transform=`translateY(${currY}px)`; const ov=document.getElementById('overlay'); if(ov) ov.style.opacity=Math.max(0,1-currY/300); e.preventDefault(); } };
+    const end=()=>{ if(!dragging) return; dragging=false; const dy=currY; const dt=Math.max(1, Date.now()-t0); const v = dy/dt; const sheetH = sheet.getBoundingClientRect().height || window.innerHeight*0.74; const threshold = sheetH * 0.5; const shouldClose = dy > threshold || v > 0.5; if(shouldClose){ toggleSheet(false); } else { sheet.style.transform='translateY(0)'; setTimeout(()=>{ sheet.style.transform=''; },150); } sheet.classList.remove('dragging'); const ov=document.getElementById('overlay'); if(ov) ov.style.opacity=''; };
+    sheet.addEventListener('touchstart', start, {passive:true, capture:false});
+    sheet.addEventListener('touchmove', move, {passive:false});
+    sheet.addEventListener('touchend', end);
+    sheet.addEventListener('touchcancel', end);
+    // mouse support (untuk pengujian di desktop)
+    sheet.addEventListener('mousedown', start);
+    sheet.addEventListener('mousemove', move);
+    sheet.addEventListener('mouseup', end);
+    sheet.addEventListener('mouseleave', end);
+  }
+
+  // Events
+  const si=document.getElementById('searchInput');
+  si.addEventListener('input',cariSOP);
+  si.addEventListener('keydown',e=>{ if(e.key==='Enter') triggerSearchFromButton(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') toggleSheet(false); });
+
+  window.addEventListener('resize', placeFilters);
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('kategori-select').value='klaster1';
+    tampilkanSOP();
+    renderDashboardStats();
+    placeFilters();
+    setupAutoHide();
+    setupSheetGestures();
+  });
+  </script>
 </body>
 </html>

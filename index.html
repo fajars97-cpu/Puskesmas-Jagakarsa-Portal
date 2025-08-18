@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Puskesmas Jagakarsa — Pepes & Aplikasi Sayur SOP</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
+    /* ====== Gaya Umum Halaman ====== */
+    * { box-sizing: border-box; } /* cegah overflow aneh */
     body {font-family: Inter, sans-serif; margin: 0; background: linear-gradient(135deg, #e0f7f4, #f0fdfc); color: #1f2937;}
     .container {max-width: 1280px; margin: auto; padding: 0 32px;}
     header {background: #d6f3ee; padding: 16px 0; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);}
@@ -17,11 +20,11 @@
     .apps {padding: 50px 0;}
     .grid-2 {display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 32px;}
     .card {border-radius: 14px; padding: 28px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; background: white;}
-    .card.pepes {background: linear-gradient(180deg, #b2ebf2, #e0f7fa);} /* Biru kehijauan */
-    .card.sayur {background: linear-gradient(180deg, #c8e6c9, #e6f4ea);} /* Hijau lembut */
+    .card.pepes {background: linear-gradient(180deg, #b2ebf2, #e0f7fa);}
+    .card.sayur {background: linear-gradient(180deg, #c8e6c9, #e6f4ea);}
     .card:hover {transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08);}
     .app-logo {width: 170px; height: 170px; object-fit: contain; margin-bottom: 14px;}
-    footer {background: linear-gradient(135deg, #059669, #0ea5e9); color: #ecfdf5; padding: 40px 0;}
+    footer {background: linear-gradient(135deg, #059669, #0ea5e9); color: #ecfdf5; padding: 40px 0; margin-top: 32px;}
     .footer-top {display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px;}
     .footer-col {flex: 1; min-width: 220px;}
     .footer-col h4 {font-weight: 700; margin-bottom: 12px; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 6px;}
@@ -30,54 +33,994 @@
     .footer-col a img {width: 20px; height: 20px;}
     .footer-col p {margin: 0 0 8px;}
     .footer-bottom {margin-top: 24px; text-align: center; font-size: 0.9rem; color: #d1fae5; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 16px;}
+
+    /* ====== Variabel & Gaya Kalender ====== */
+    :root{--bg:#f6f8fb;--card:#ffffff;--ink:#1f2937;--muted:#6b7280;--brand:#0ea5e9;--ring:#cfe8ff;--border:#e5e7eb;--stripe:#e5e7eb;--radius:16px;}
+
+    /* Bungkus fitur kalender (border pembeda) */
+    .calendar-section{max-width:1100px;margin:24px auto;padding:0;border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 20px rgba(0,0,0,.05);background:#fff;overflow:visible}
+    .calendar-headbar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#f8fafc,#ffffff)}
+    .calendar-headbar h2{margin:0;font-size:20px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:10px}
+    .calendar-headbar .icon{width:22px;height:22px;display:inline-block}
+    .calendar-wrap{padding:16px; overflow: visible;}
+
+    /* Toolbar pencarian */
+    .cal-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-bottom:10px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:12px;color:var(--muted);font-weight:600}
+    .input, .select{border:1px solid var(--border);border-radius:10px;padding:9px 10px;background:#fff;min-width:180px}
+    .action-btn{border:1px solid var(--border);background:#fff;padding:9px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+    .action-btn.primary{background:var(--brand);border-color:transparent;color:#fff}
+    .action-btn:hover{filter:brightness(.98)}
+
+    /* Header kalender */
+    .cal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid var(--border);border-radius:12px;position: sticky; top: 0; background: #fff; z-index: 5;}
+    .cal-title{display:flex;align-items:center;gap:10px}
+    .cal-title h3{margin:0;font-size:18px;font-weight:700}
+    .month-label{font-weight:700}
+    .cal-controls{display:flex;align-items:center;gap:8px}
+    .btn{border:1px solid var(--border);background:#fff;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:600}
+    .btn:hover{background:#f3f4f6}.btn:focus{outline:3px solid var(--ring)}
+
+    /* Tombol Hari Ini – seragam biru & kontras saat hover */
+    .today-btn {background: #e6f3ff; color: #0ea5e9; border: 2px solid #0ea5e9; font-weight: 700; padding: 6px 14px; border-radius: 8px; transition: background-color .2s ease, color .2s ease, border-color .2s ease;}
+    .today-btn:hover { background: #0ea5e9; color: #ffffff; border-color: #0ea5e9; }
+
+    /* Grid */
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);margin-top:12px;border:1px solid var(--border);border-radius:12px;overflow:hidden; width: 100%; box-sizing: border-box;}
+    .cal-grid .dow{background:#fafbfc;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:10px;text-align:center}
+    .cal-grid .dow.weekend{color:#dc2626;font-weight:800}
+
+    .day{background:#fff;min-height:110px;display:flex;flex-direction:column;position:relative}
+    .day.weekend .day-num{color:#dc2626;font-weight:800}
+    .day-btn{all:unset;cursor:pointer;display:flex;flex-direction:column;min-height:110px;height:100%; position: relative;} /* penting untuk badge */
+    .day-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
+    .day-num{font-weight:700}.day.bad-month{opacity:.45}
+    .day.today .day-num{background:var(--brand);color:#fff;border-radius:8px;padding:2px 6px}
+
+    .stripes{display:flex;flex-direction:column;gap:2px;padding:0 8px 10px 8px}
+    .stripe{height:6px;border-radius:999px;background:var(--stripe)}
+    .more{font-size:10px;color:var(--muted);padding:2px 8px 8px}
+
+    .detail{padding:14px 16px;display:none;border-top:1px solid var(--border);background:#fff;border-radius:0 0 12px 12px}
+    .detail.active{display:block;animation:fade .18s ease}
+    .detail h3{margin:0 0 8px 0;font-size:16px}
+    .events{display:flex;flex-direction:column;gap:10px}
+    /* Tidak ada hover/goyang pada event */
+    .event{border:1px solid var(--border);border-left:6px solid var(--brand);padding:10px;border-radius:12px;display:grid;grid-template-columns:auto 1fr;gap:10px;background:#fff;transition:none}
+    .event-time{font-weight:700;color:#111827}
+    .event-title{margin:0;font-weight:700}
+    .event-meta{font-size:12px;color:#6b7280}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:6px;vertical-align:middle}
+
+    .detail-columns{display:grid;grid-template-columns:1fr;gap:12px}
+    .panel{border:1px solid var(--border);border-radius:12px;background:#fff}
+    .panel .panel-head{padding:10px 12px;border-bottom:1px solid var(--border);font-weight:800}
+    .panel .panel-body{padding:12px}
+    .panel .empty{color:#6b7280;font-size:12px}
+  
+    .search-results{display:none;padding:12px 16px;border-top:1px dashed var(--border);background:#fcfdff;border-radius:12px;margin-top:10px}
+    .search-results.active{display:block}
+    .result-item{padding:8px 10px;border:1px solid var(--border);border-left:6px solid #cbd5e1;border-radius:12px;margin-bottom:8px;background:#fff;cursor:pointer}
+    .result-item:hover{background:#f8fafc}
+
+    .toggle-btn {border: 2px solid #d1d5db;background: #fff;padding: 6px 10px;border-radius: 8px;font-weight: bold;cursor: pointer;transition: all 0.2s ease;font-size: 16px;line-height: 1;color: #374151;}
+    .toggle-btn:hover {background: #f3f4f6;}
+    .toggle-btn.active {background: #0ea5e9;color: #fff;border-color: #0ea5e9;}
+    .panel.collapsible .panel-body{display:none}
+    .panel.collapsible.open .panel-body{display:block}
+
+    .list{display:flex;flex-direction:column;gap:8px}
+    .list-item{border:1px solid var(--border);border-left:6px solid var(--brand);border-radius:12px;padding:10px;background:#fff}
+    .list-item .title{font-weight:700;margin:0 0 2px 0}
+    .list-item .meta{font-size:12px;color:#6b7280}
+
+    :root{ --day-h: clamp(66px, 10vw + 38px, 110px); }
+
+    /* Bar & toggle untuk toolbar pencarian (mobile) */
+    .toolbar-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .toolbar-toggle{display:none;border:2px solid #d1d5db;background:#fff;padding:6px 10px;border-radius:10px;font-weight:800;cursor:pointer;transition:all .2s;font-size:14px;color:#374151}
+    .toolbar-toggle:hover{background:#f3f4f6}
+
+    /* Header kalender tetap terlihat saat scroll */
+    /* (sudah digabung ke .cal-header) */
+
+    /* Gunakan tinggi adaptif untuk sel hari */
+    .day{min-height:var(--day-h)}
+    .day-btn{min-height:var(--day-h)}
+
+    /* ===== Breakpoint mobile ===== */
+    @media (max-width: 680px){
+      .toolbar-toggle{display:inline-flex;align-items:center;gap:8px}
+      .cal-toolbar{display:none}
+      .cal-toolbar.open{display:flex}          /* dibuka via JS */
+      .cal-toolbar{flex-direction:column;align-items:stretch}
+      .input,.select{min-width:unset}
+
+      /* Kompakkan kalender */
+      .day{min-height: clamp(60px, 9vw + 34px, 90px)}
+      .day-head{padding:4px 6px}
+      .day-num{font-size:12px}
+      .stripes{padding:0 4px 6px}
+      .stripe{height:5px}
+
+      /* Panel detail bergulir agar tidak memanjang */
+      .detail{max-height:55vh;overflow:auto;border-radius:12px}
+    }
+
+    /* ===== Layar sangat kecil ===== */
+    @media (max-width: 430px){
+      .cal-grid .dow{font-size:10px;padding:6px}
+      .day-num{font-size:11.5px}
+      .stripes{display:none} /* minimalis agar rapi */
+    }
+
+    /* ====== Responsiveness ====== */
+    @media (max-width: 900px) {
+      .calendar-section{margin:16px 16px}
+      .calendar-headbar h2{font-size:18px}
+      .cal-title h3 { font-size: 17px; }
+      .month-label { font-size: 14px; }
+      .day { min-height: 95px; }
+      .day-num { font-size: 14px; }
+      .cal-toolbar{gap:6px}
+    }
+    @media (min-width: 900px){
+      .detail-columns{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 680px) {
+      .calendar-section{margin:12px 12px}
+      .cal-header { flex-wrap: wrap; gap: 10px; }
+      .cal-title h3 { font-size: 16px; }
+      .month-label { font-size: 13px; }
+      .day { min-height: 80px; }
+      .day-head { padding: 4px 6px; }
+      .stripes { padding: 0 4px 6px; }
+      .detail h3 { font-size: 14px; }
+      .event { grid-template-columns: 1fr; }
+      .event-time { font-size: 12px; }
+      .event-title { font-size: 14px; }
+      .event-meta { font-size: 11px; }
+      .cal-toolbar{flex-direction:column;align-items:stretch}
+      .input,.select{min-width:unset}
+    }
+    /* ===== COMPACT CALENDAR FOR SMALL PHONES ===== */
+    @media (max-width: 430px){
+      /* rapikan ruang */
+      .calendar-wrap{padding:8px}
+      .cal-header{padding:8px 10px; gap:8px}
+      .cal-grid{margin-top:6px}
+      .cal-grid .dow{font-size:10px; padding:6px}
+
+      /* kecilkan sel hari agar 6 baris muat */
+      :root{ --day-h: 52px; }   /* <= kunci agar 1 bulan muat */
+      .day{min-height:var(--day-h)}
+      .day-btn{min-height:var(--day-h)}
+      .day-head{padding:3px 5px}
+      .day-num{font-size:12px; font-weight:800}
+
+      /* minimalkan isi sel */
+      .stripes{display:none}      /* garis agenda disembunyikan */
+      .more{display:none}         /* “+x lagi” disembunyikan */
+
+      /* panel detail agar tak mendorong layout terlalu jauh */
+      .detail{max-height:54vh; overflow:auto; border-radius:12px}
+    }
+
+    /* ==== FIX: kolom Kamis–Sabtu hilang di mobile ==== */
+    .cal-grid{
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: visible !important;  /* jangan klip isi grid */
+    }
+    .cal-grid > * { min-width: 0; }
+    .calendar-section, .calendar-wrap{ overflow: visible; }
+
+    @media (max-width: 430px){
+      .calendar-wrap{ padding-right: 8px; }
+    }
+
+    /* Badge jumlah agenda di dalam sel hari */
+    .agenda-badge{
+      position:absolute;
+      right:6px;
+      bottom:6px;
+      font-size:10px;
+      line-height:1;
+      padding:2px 6px;
+      border-radius:999px;
+      background:#e6f3ff;
+      color:#0ea5e9;
+      font-weight:800;
+      pointer-events:none;
+      max-width: calc(100% - 10px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Mobile: rapikan, jangan pakai teks panjang "agenda" */
+    @media (max-width: 680px){
+      .cal-grid .agenda-text,
+      .cal-grid .agenda-label,
+      .cal-grid .agenda-info,
+      .cal-grid .agenda { display:none !important; }
+      .cal-grid .day *{ white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+    }
+
+    @media (max-width: 430px){
+      .more{ display:none !important; }
+    }
+
+    @keyframes fade{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:none}}
   </style>
 </head>
 <body>
   <header class="container">
-    <img src="https://i.imgur.com/UN39lb5.jpeg" alt="Logo Puskesmas Jagakarsa">
+    <img src="https://i.imgur.com/UN39lb5.jpeg" alt="Logo Puskesmas Jagakarsa" loading="lazy" referrerpolicy="no-referrer">
     <h1>Puskesmas Jagakarsa</h1>
   </header>
+
   <section class="hero">
     <div class="container">
       <h2>Selamat Datang di Portal Aplikasi Kesehatan</h2>
       <p>Temukan dan gunakan aplikasi resmi Puskesmas Jagakarsa untuk memudahkan akses informasi peraturan kesehatan dan alur SOP secara praktis.</p>
     </div>
   </section>
+
   <section class="apps container">
     <div class="grid-2">
-<div class="card pepes" onclick="location.href='pepes/index.html'">
-  <img src="https://i.imgur.com/NUEv4G4.png" alt="Logo Pepes" class="app-logo">
-  <h4>Pepes — Penampil Peraturan Kesehatan</h4>
-  <p>Tampilkan, telusuri, dan pratinjau peraturan kesehatan. Dilengkapi pencarian & filter.</p>
-</div>
-<div class="card sayur" onclick="location.href='sop/index.html'">
-  <img src="https://i.imgur.com/BEqTCH9.png" alt="Logo Aplikasi Sayur SOP" class="app-logo">
-  <h4>Aplikasi Sayur SOP — Standar Alur yang Utuh dan Rapi SOP</h4>
-  <p>Lihat bagan alur SOP per klaster dengan tampilan rapi dan kompatibel di semua perangkat.</p>
-</div>
+      <div class="card pepes" onclick="location.href='pepes/index.html'">
+        <img src="https://i.imgur.com/NUEv4G4.png" alt="Logo Pepes" class="app-logo" loading="lazy" referrerpolicy="no-referrer">
+        <h4>Pepes — Penampil Peraturan Kesehatan</h4>
+        <p>Tampilkan, telusuri, dan pratinjau peraturan kesehatan. Dilengkapi pencarian & filter.</p>
+      </div>
+      <div class="card sayur" onclick="location.href='sop/index.html'">
+        <img src="https://i.imgur.com/BEqTCH9.png" alt="Logo Aplikasi Sayur SOP" class="app-logo" loading="lazy" referrerpolicy="no-referrer">
+        <h4>Aplikasi Sayur SOP — Standar Alur yang Utuh dan Rapi SOP</h4>
+        <p>Lihat bagan alur SOP per klaster dengan tampilan rapi dan kompatibel di semua perangkat.</p>
+      </div>
     </div>
   </section>
+
+  <!-- ===== Fitur Kalender Jadwal Kegiatan ===== -->
+  <section class="container">
+    <div class="calendar-section" aria-label="Bagian Fitur Kalender">
+      <div class="calendar-headbar">
+        <!-- Ikon kalender (inline SVG) -->
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="17" rx="3" stroke="#0ea5e9" stroke-width="1.6" />
+          <path d="M8 2v4M16 2v4M3 9h18" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <h2>Kalender Jadwal Kegiatan</h2>
+      </div>
+
+      <div class="calendar-wrap">
+        <!-- Toolbar Pencarian -->
+        <div class="toolbar-bar">
+          <strong style="font-size:14px">Pencarian</strong>
+          <button class="toolbar-toggle" id="toolbarToggle" aria-expanded="false" aria-controls="calToolbar">
+            Filter ▾
+          </button>
+        </div>
+
+        <div class="cal-toolbar" id="calToolbar" role="search">
+          <div class="field">
+            <label for="searchDate">Cari Berdasarkan Tanggal</label>
+            <input class="input" type="date" id="searchDate" />
+          </div>
+          <div class="field">
+            <label for="searchText">Cari Judul/Kategori/Lokasi</label>
+            <input class="input" type="text" id="searchText" placeholder="contoh: posyandu, gigi, imunisasi" />
+          </div>
+          <button class="action-btn primary" id="searchBtn">Cari</button>
+          <button class="action-btn" id="resetBtn">Reset</button>
+        </div>
+
+        <!-- Hasil Pencarian -->
+        <div class="search-results" id="searchResults" aria-live="polite"></div>
+
+        <!-- Header Kalender -->
+        <div class="cal-header">
+          <div class="cal-title">
+            <h3>Jadwal Bulanan</h3>
+            <div class="month-label" id="monthLabel"></div>
+          </div>
+          <div class="cal-controls">
+            <button class="btn" id="prevBtn" aria-label="Bulan sebelumnya">◀</button>
+            <button class="btn today-btn" id="todayBtn">Hari Ini</button>
+            <button class="btn" id="nextBtn" aria-label="Bulan berikutnya">▶</button>
+          </div>
+        </div>
+
+        <!-- Grid Kalender -->
+        <div class="cal-grid" id="calGrid" role="grid" aria-readonly="true">
+          <div class="dow weekend">Min</div><div class="dow">Sen</div><div class="dow">Sel</div>
+          <div class="dow">Rab</div><div class="dow">Kam</div><div class="dow">Jum</div><div class="dow weekend">Sab</div>
+        </div>
+
+        <!-- Panel Detail -->
+        <div class="detail" id="detailPanel" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div class="container">
       <div class="footer-top">
         <div class="footer-col">
           <h4>Kontak</h4>
           <p>Jl. Masjid Al Afiah, RT.1/RW.2, Jagakarsa, Kec. Jagakarsa,<br>Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12620</p>
-          <a href="mailto:info@pkmjagakarsa.com"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png">Email</a>
-          <a href="https://api.whatsapp.com/send/?phone=6281389685271&text&type=phone_number&app_absent=0" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">WhatsApp</a>
+          <a href="mailto:info@pkmjagakarsa.com"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Icon Email" loading="lazy" referrerpolicy="no-referrer">Email</a>
+          <a href="https://api.whatsapp.com/send/?phone=6281389685271&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="Icon WhatsApp" loading="lazy" referrerpolicy="no-referrer">WhatsApp</a>
         </div>
         <div class="footer-col">
           <h4>Media Sosial</h4>
-          <a href="https://www.youtube.com/channel/UC6inZ3DXzmX_ha-Sc8j3qgA/featured" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">YouTube</a>
-          <a href="https://www.tiktok.com/@pkmjagakarsa?_t=8Wn1WIynL4z&_r=1" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/3046/3046125.png">TikTok</a>
-          <a href="https://www.facebook.com/pkmjagakarsa" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png">Facebook</a>
-          <a href="https://x.com/pkmjagakarsa" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png">X</a>
-          <a href="https://www.instagram.com/pkmjagakarsa/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">Instagram</a>
+          <a href="https://www.youtube.com/channel/UC6inZ3DXzmX_ha-Sc8j3qgA/featured" target="_blank" rel="noopener noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="Icon YouTube" loading="lazy" referrerpolicy="no-referrer">YouTube</a>
+          <a href="https://www.tiktok.com/@pkmjagakarsa?_t=8Wn1WIynL4z&_r=1" target="_blank" rel="noopener noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/3046/3046125.png" alt="Icon TikTok" loading="lazy" referrerpolicy="no-referrer">TikTok</a>
+          <a href="https://www.facebook.com/pkmjagakarsa" target="_blank" rel="noopener noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Icon Facebook" loading="lazy" referrerpolicy="no-referrer">Facebook</a>
+          <a href="https://x.com/pkmjagakarsa" target="_blank" rel="noopener noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="Icon X" loading="lazy" referrerpolicy="no-referrer">X</a>
+          <a href="https://www.instagram.com/pkmjagakarsa/" target="_blank" rel="noopener noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Icon Instagram" loading="lazy" referrerpolicy="no-referrer">Instagram</a>
         </div>
       </div>
       <div class="footer-bottom">© <span id="year"></span> Puskesmas Jagakarsa</div>
     </div>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4KKJRLYKR0"></script>
+<script>
+  // Opsional: hormati Do Not Track di browser
+  (function(id){
+    if (navigator.doNotTrack == '1' || window.doNotTrack == '1') {
+      window['ga-disable-' + id] = true;
+    }
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', id);
+  })('G-4KKJRLYKR0');
+</script>
+
   </footer>
-  <script>document.getElementById('year').textContent=new Date().getFullYear()</script>
+
+  <script>
+  // Tahun footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /** Data awal agenda (contoh) **/
+  const EVENTS = [
+    { date: "2025-08-14", time: "08:00", title: "Imunisasi Balita", category: "Layanan", location: "Ruang Imunisasi" },
+    { date: "2025-08-14", time: "10:00", title: "Kelas Ibu Hamil", category: "Promosi Kesehatan", location: "Aula Puskesmas" },
+    { date: "2025-08-14", time: "13:30", title: "Posbindu PTM", category: "Posbindu", location: "RW 03" },
+
+    { date: "2025-08-15", time: "09:00", title: "Pelayanan Gigi", category: "Layanan", location: "Poli Gigi" },
+    { date: "2025-08-15", time: "10:00", title: "Penyuluhan Hipertensi", category: "Promosi Kesehatan", location: "Ruang Penyuluhan" },
+
+    { date: "2025-08-20", time: "07:30", title: "Vaksinasi MR", category: "Program", location: "SDN 01" },
+    { date: "2025-08-20", time: "11:00", title: "Rapat Koordinasi", category: "Manajemen", location: "Ruang Rapat" },
+    { date: "2025-08-20", time: "14:00", title: "Kunjungan Rumah", category: "UKM", location: "Kel. Jagakarsa" },
+    { date: "2025-08-20", time: "15:00", title: "Pemeriksaan TB", category: "Program", location: "Lab" },
+    { date: "2025-08-20", time: "16:00", title: "Kelas Remaja", category: "Promosi Kesehatan", location: "Aula" },
+
+    { date: "2025-08-28", time: "08:00", title: "Posyandu Bunga Mawar", category: "Posyandu", location: "Posyandu RW 05" },
+
+    // contoh tabrakan (tanggal & jam sama tapi kegiatan berbeda)
+    { date: "2025-08-20", time: "11:00", title: "Skrining Anemia Remaja", category: "Program", location: "SMPN 02" }
+  ];
+
+  /** Program / Catatan Bulanan (tanpa tanggal pasti, tampil di panel detail) */
+  const MONTHLY_EVENTS = [
+    { months: [0], title: "Januari -- Bulan Kesadaran Kanker Serviks (Cervical Cancer Awareness Month)", category: "Program Bulanan" },
+    { months: [0], title: "Januari -- Bulan Kesadaran Kesehatan Tiroid (Thyroid Health Awareness Month)", category: "Program Bulanan" },
+    { months: [1], title: "Februari -- Bulan Pencegahan Infeksi Prenatal Internasional (International Prenatal Infection Prevention Month)", category: "Program Bulanan" },
+    { months: [1], title: "Februari -- Bulan Kesadaran Cholangiocarcinoma (Cholangiocarcinoma Awareness Month)", category: "Program Bulanan" },
+    { months: [3], title: "April -- Bulan Penerimaan Autisme Sedunia (World Autism Awareness Month)", category: "Program Bulanan" },
+    { months: [8], title: "September -- Bulan Kesadaran Kanker Anak (Childhood Cancer Awareness Month)", category: "Program Bulanan" },
+    { months: [8], title: "September -- Bulan Kesadaran Kanker Darah (Blood Cancer Awareness Month)", category: "Program Bulanan" },
+    { months: [8], title: "September -- Bulan Alzheimer Dunia (World Alzheimer’s Month)", category: "Program Bulanan" },
+    { months: [9], title: "Oktober -- Bulan Kesadaran Kanker Payudara (Breast Cancer Awareness Month)", category: "Program Bulanan" },
+    { months: [10], title: "November -- Bulan Kesadaran Kanker Paru-paru (Lung Cancer Awareness Month)", category: "Program Bulanan" },
+
+    { months: [7],  title: "Agustus -- Bulan Imunisasi Anak Sekolah (BIAS)", category: "Program Bulanan" },
+    { months: [10], title: "November -- Bulan Imunisasi Anak Sekolah (BIAS)", category: "Program Bulanan" },
+    { months: [0,1], title: "Jan–Feb -- Bulan K3 Nasional", category: "Program Bulanan" },
+    { months: [9],  title: "Oktober -- Bulan Kesehatan Jiwa", category: "Program Bulanan" },
+    { months: [9],  title: "Oktober -- Bulan Peduli Kanker Payudara", category: "Program Bulanan" }
+  ];
+  function getMonthlyNotes(monthIndex){
+    return MONTHLY_EVENTS.filter(m => m.months.includes(monthIndex));
+  }
+
+  /** Libur Nasional & Cuti Bersama 2025 */
+  const HOLIDAYS_2025 = [
+    // Libur Nasional
+    { date: "2025-01-01", title: "Tahun Baru 2025", category: "Libur Nasional" },
+    { date: "2025-01-27", title: "Isra Mi'raj Nabi Muhammad SAW", category: "Libur Nasional" },
+    { date: "2025-01-29", title: "Tahun Baru Imlek 2576", category: "Libur Nasional" },
+    { date: "2025-03-29", title: "Hari Suci Nyepi", category: "Libur Nasional" },
+    { date: "2025-03-31", title: "Idulfitri 1446 H (1)", category: "Libur Nasional" },
+    { date: "2025-04-01", title: "Idulfitri 1446 H (2)", category: "Libur Nasional" },
+    { date: "2025-04-18", title: "Wafat Isa Almasih", category: "Libur Nasional" },
+    { date: "2025-05-01", title: "Hari Buruh Internasional", category: "Libur Nasional" },
+    { date: "2025-05-12", title: "Hari Raya Waisak 2569 BE", category: "Libur Nasional" },
+    { date: "2025-05-29", title: "Kenaikan Isa Almasih", category: "Libur Nasional" },
+    { date: "2025-06-01", title: "Hari Lahir Pancasila", category: "Libur Nasional" },
+    { date: "2025-06-06", title: "Iduladha 1446 H", category: "Libur Nasional" },
+    { date: "2025-08-17", title: "Hari Kemerdekaan RI ke-80", category: "Libur Nasional" },
+    { date: "2025-12-25", title: "Hari Raya Natal", category: "Libur Nasional" },
+    // Cuti Bersama
+    { date: "2025-01-28", title: "Cuti Bersama Imlek", category: "Cuti Bersama" },
+    { date: "2025-03-28", title: "Cuti Bersama Nyepi", category: "Cuti Bersama" },
+    { date: "2025-04-02", title: "Cuti Bersama Idulfitri", category: "Cuti Bersama" },
+    { date: "2025-04-03", title: "Cuti Bersama Idulfitri", category: "Cuti Bersama" },
+    { date: "2025-04-04", title: "Cuti Bersama Idulfitri", category: "Cuti Bersama" },
+    { date: "2025-04-07", title: "Cuti Bersama Idulfitri", category: "Cuti Bersama" },
+    { date: "2025-05-13", title: "Cuti Bersama Waisak", category: "Cuti Bersama" },
+    { date: "2025-05-30", title: "Cuti Bersama Kenaikan Isa Almasih", category: "Cuti Bersama" },
+    { date: "2025-06-09", title: "Cuti Bersama Iduladha", category: "Cuti Bersama" },
+    { date: "2025-08-18", title: "Cuti Bersama HUT RI", category: "Cuti Bersama" },
+    { date: "2025-12-26", title: "Cuti Bersama Natal", category: "Cuti Bersama" }
+  ];
+
+  /** Hari Kesehatan Nasional & Internasional (2025) — TANPA duplikasi */
+  const HEALTH_DAYS_2025 = [
+    { date: "2025-01-04", title: "Hari Braille Sedunia (World Braille Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-01-11", title: "Hari Kesadaran Paget Internasional (International Paget’s Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-01-25", title: "Hari Gizi Nasional", category: "Hari Kesehatan Nasional" },
+    { date: "2025-01-26", title: "Hari Kusta Sedunia (World Leprosy Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-01-30", title: "Hari Penyakit Tropis Terabaikan Sedunia (World Neglected Tropical Diseases Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-02-03", title: "Hari Aspergillosis Sedunia (World Aspergillosis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-02-04", title: "Hari Kanker Sedunia (World Cancer Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-02-10", title: "Hari Epilepsi Internasional (International Epilepsy Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-02-13", title: "Hari Persatuan Farmasi Indonesia", category: "Hari Kesehatan Nasional" },
+    { date: "2025-02-15", title: "Hari Kanker Anak Sedunia (World Childhood Cancer Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-02-22", title: "Hari Ensefalitis Sedunia (World Encephalitis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-02-28", title: "Hari Kesadaran Cedera Regangan Berulang Internasional (International Repetitive Strain Injury Awareness Day), Hari Penyakit Langka Sedunia (World Rare Disease Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-03-02", title: "Hari Kesehatan Mental Remaja Sedunia (World Youth Mental Health Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-03", title: "Hari Kesehatan Telinga & Pendengaran Nasional & Sedunia (World Hearing Day), Hari Cacat Lahir Sedunia (World Birth Defects Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-04", title: "Hari Obesitas Sedunia (World Obesity Day), Hari Kesadaran HPV Internasional (International HPV Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-08", title: "Hari Perempuan Internasional (International Women’s Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-13", title: "Hari Ginjal Sedunia (World Kidney Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-20", title: "Hari Kesehatan Mulut Sedunia (World Oral Health Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-21", title: "Hari Down Syndrome Sedunia (World Down Syndrome Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-22", title: "Hari Air Sedunia (World Water Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-24", title: "Hari Tuberkulosis Sedunia (World Tuberculosis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-26", title: "Purple Day for Epilepsy", category: "Hari Kesehatan Internasional" },
+    { date: "2025-03-30", title: "Hari Bipolar Sedunia (World Bipolar Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-04-02", title: "Hari Peringatan Autisme Sedunia (World Autism Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-06", title: "Hari Aktivitas Fisik Sedunia (World Physical Activity Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-07", title: "Hari Kesehatan Sedunia (World Health Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-08", title: "Hari Anak Balita Nasional", category: "Hari Kesehatan Nasional" },
+    { date: "2025-04-11", title: "Hari Kanker Tulang Nasional, Hari Parkinson Sedunia (World Parkinson’s Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-14", title: "Hari Penyakit Chagas Sedunia (World Chagas Disease Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-17", title: "Hari Hemofilia Sedunia (World Hemophilia Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-19", title: "Hari Liver Sedunia (World Liver Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-25", title: "Hari Malaria Sedunia (World Malaria Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-28", title: "Hari Keselamatan dan Kesehatan Kerja Sedunia (World Occupational Safety and Health Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-04-29", title: "Hari Posyandu", category: "Hari Kesehatan Nasional" },
+    { date: "2025-04-30", title: "Hari Sadar Bising Sedunia (World Noise Awareness Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-05-03", title: "Hari Ankylosing Spondylitis Sedunia (World Ankylosing Spondylitis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-05", title: "Hari Kebersihan Tangan Sedunia (World Hand Hygiene Day), Hari Bidan Internasional (International Midwives Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-06", title: "Hari Asma Sedunia (World Asthma Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-08", title: "Hari Palang Merah & Bulan Sabit Merah Sedunia (World Red Cross & Red Crescent Day), Hari Talasemia Internasional (International Thalassemia Day), Hari Kanker Ovarium Sedunia (World Ovarian Cancer Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-10", title: "Hari Lupus Sedunia (World Lupus Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-12", title: "Hari Perawat Sedunia (World Nurses Day), Hari Kesadaran Penyakit Imunologi & Neurologis Kronis Internasional (ME/CFS International Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-15", title: "Hari Internasional Keluarga (International Day of Families)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-17", title: "Hari Hipertensi Sedunia (World Hypertension Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-19", title: "Hari Penyakit Radang Usus Sedunia (World Inflammatory Bowel Disease Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-20", title: "Hari Arthritis Autoimun Sedunia (World Autoimmune Arthritis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-21", title: "Hari Perlindungan Menyusui Sedunia (World Breastfeeding Protection Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-22", title: "Hari Preeclampsia Sedunia (World Preeclampsia Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-24", title: "Hari Skizofrenia Sedunia (World Schizophrenia Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-25", title: "Hari Tiroid Sedunia (World Thyroid Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-28", title: "Hari Aksi Internasional Untuk Kesehatan Perempuan (International Day of Action for Women’s Health)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-29", title: "Hari Lansia Nasional, Hari Kesehatan Pencernaan Sedunia (World Digestive Health Day)", category: "Hari Kesehatan Nasional" },
+    { date: "2025-05-30", title: "Hari Multiple Sclerosis Sedunia (World Multiple Sclerosis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-05-31", title: "Hari Tanpa Tembakau Sedunia (World No Tobacco Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-06-05", title: "Hari Lingkungan Sedunia (World Environment Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-07", title: "Hari Keamanan Makanan Sedunia (World Food Safety Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-08", title: "Hari Tumor Otak Sedunia (World Brain Tumor Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-14", title: "Hari Donor Darah Sedunia (World Blood Donor Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-15", title: "Hari Demam Berdarah ASEAN, Hari Kesadaran Pelecehan Lansia Sedunia (World Elder Abuse Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-19", title: "Hari Sel Sabit Sedunia (World Sickle Cell Day), Hari Kanker Ginjal Sedunia (World Kidney Cancer Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-21", title: "Hari Yoga Sedunia (World Yoga Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-24", title: "Hari Bidan Nasional", category: "Hari Kesehatan Nasional" },
+    { date: "2025-06-25", title: "Hari Vitiligo Sedunia (World Vitiligo Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-26", title: "Hari Anti Narkoba Sedunia / Hari Internasional Menentang Penyalahgunaan dan Peredaran Gelap Narkoba (World Drug Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-06-29", title: "Hari Keluarga Nasional", category: "Hari Kesehatan Nasional" },
+
+    { date: "2025-07-06", title: "Hari Zoonosis Sedunia", category: "Hari Kesehatan Internasional" },
+    { date: "2025-07-11", title: "Hari Populasi Sedunia (World Population Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-07-17", title: "Hari Saka Bakti Husada", category: "Hari Kesehatan Nasional" },
+    { date: "2025-07-22", title: "Hari Otak Sedunia (World Brain Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-07-23", title: "Hari Anak Nasional, Hari Sjogren Sedunia (World Sjogren’s Day)", category: "Hari Kesehatan Nasional" },
+    { date: "2025-07-25", title: "Hari Pencegahan Tenggelam Sedunia (World Drowning Prevention Day), Hari Bayi Tabung Sedunia (World IVF Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-07-28", title: "Hari Hepatitis Sedunia (World Hepatitis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-07-29", title: "Hari Oralit Sedunia (World Oral Rehydration Salts Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-08-01", title: "Hari Kanker Paru-paru Sedunia (World Lung Cancer Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-08-09", title: "Hari Internasional Masyarakat Adat Sedunia (International Day of the World’s Indigenous Peoples)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-08-12", title: "Hari Pemuda Internasional (International Youth Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-08-13", title: "Hari Donor Organ Tubuh Sedunia (World Organ Donation Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-08-18", title: "Hari Penelitian Kanker Payudara Sedunia (World Breast Cancer Research Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-08-19", title: "Hari Kemanusiaan Sedunia (World Humanitarian Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-08-31", title: "Hari Internasional Orang Keturunan Afrika (International Day of People of African Descent), Hari Kesadaran Overdosis Internasional (International Overdose Awareness Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-09-04", title: "Hari Leukemia Sedunia (World Leukemia Day), Hari Kesehatan Seksual Sedunia (World Sexual Health Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-06", title: "Hari Buta Warna Sedunia (World Color Blindness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-07", title: "Hari Kesadaran Duchenne Sedunia (World Duchenne’s Awareness Day), Hari Udara Bersih Internasional (International Day of Clean Air for Blue Skies)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-08", title: "Hari Fisioterapi Sedunia (World Physiotherapy Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-09", title: "Hari Olahraga Nasional, Hari Sindrom Alkohol Janin Sedunia (International Fetal Alcohol Spectrum Disorders Awareness Day)", category: "Hari Kesehatan Nasional" },
+    { date: "2025-09-10", title: "Hari Pencegahan Bunuh Diri Sedunia (World Suicide Prevention Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-12", title: "Hari Kesehatan Gigi dan Mulut Nasional", category: "Hari Kesehatan Nasional" },
+    { date: "2025-09-13", title: "Hari Sepsis Sedunia (World Sepsis Day), Hari Pertolongan Pertama Sedunia (World First Aid Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-15", title: "Hari Kesadaran Limfoma Sedunia (World Lymphoma Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-17", title: "Hari Palang Merah Indonesia, Hari Keselamatan Pasien Sedunia (World Patient Safety Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-19", title: "Hari Kesadaran Gigitan Ular Internasional (International Snakebite Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-21", title: "Hari Alzheimer Sedunia (World Alzheimer’s Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-25", title: "Hari Paru Sedunia (World Lung Day), Hari Kesadaran Ataksia Internasional (International Ataxia Awareness Day), Hari Apoteker Sedunia (World Pharmacists Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-26", title: "Hari Kontrasepsi Sedunia (World Contraception Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-28", title: "Hari Rabies Sedunia (World Rabies Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-09-29", title: "Hari Jantung Sedunia (World Heart Day)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-10-01", title: "Hari Internasional Orang Lansia (International Day of Older Persons)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-05", title: "Hari Meningitis Sedunia (World Meningitis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-06", title: "Hari Cerebral Palsy Sedunia (World Cerebral Palsy Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-09", title: "Hari Pengelihatan Sedunia (World Sight Day)", category: "Kesehatan Indera Internasional" },
+    { date: "2025-10-10", title: "Hari Kesehatan Jiwa Sedunia (World Mental Health Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-11", title: "Hari Hospis & Perawatan Paliatif Sedunia (World Hospice and Palliative Care Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-12", title: "Hari Radang Sendi Sedunia (World Arthritis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-13", title: "Hari Pengurangan Risiko Bencana Internasional (International Day for Disaster Risk Reduction), Hari Trombosis Sedunia (World Thrombosis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-15", title: "Hari Cuci Tangan Sedunia (World Handwashing Day), Hari Peringatan Kehamilan & Kehilangan Bayi Sedunia (World Pregnancy & Infant Loss Remembrance Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-16", title: "Hari Tulang Belakang Sedunia (World Spine Day), Hari Anestesi Sedunia (World Anaesthesia Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-17", title: "Hari Trauma Sedunia (World Trauma Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-18", title: "Hari Menopause Sedunia (World Menopause Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-19", title: "Hari Tulang & Sendi Pediatrik Sedunia (World Pediatric Bone and Joint Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-20", title: "Hari Osteoporosis Sedunia (World Osteoporosis Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-21", title: "Hari Kekurangan Yodium Sedunia (World Iodine Deficiency Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-22", title: "Hari Kesadaran Gagap Internasional (International Stuttering Awareness Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-10-24", title: "Hari Dokter Nasional, Hari Polio Sedunia (World Polio Day)", category: "Hari Kesehatan Nasional" },
+    { date: "2025-10-29", title: "Hari Psoriasis Sedunia (World Psoriasis Day), Hari Stroke Sedunia (World Stroke Day), Hari Perawatan & Dukungan Internasional (International Day of Care and Support)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-11-03", title: "Hari One Health Internasional (International One Health Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-10", title: "Hari Keratoconus Sedunia (World Keratoconus Day), Hari Imunisasi Sedunia (World Immunization Day), Hari Kanker Neuroendokrin Sedunia (World Neuroendocrine Cancer Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-12", title: "Hari Kesehatan Nasional (HKN), Hari Pneumonia Sedunia (World Pneumonia Day)", category: "Hari Kesehatan Nasional" },
+    { date: "2025-11-14", title: "Hari Diabetes Sedunia (World Diabetes Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-16", title: "Hari Peringatan Dunia untuk Korban Lalu Lintas Jalan Raya (World Day of Remembrance for Road Traffic Victims)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-17", title: "Hari Prematur Sedunia (World Premature Day), Hari Eliminasi Kanker Serviks Sedunia (World Cervical Cancer Elimination Day), Hari PPOK Sedunia", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-19", title: "Hari Toilet Sedunia (World Toilet Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-20", title: "Hari Kanker Pankreas Sedunia (World Pancreatic Cancer Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-22", title: "Hari Penyintas Bunuh Diri Internasional (International Survivors of Suicide Loss Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-11-25", title: "Hari Internasional untuk Penghapusan Kekerasan Terhadap Perempuan (International Day for the Elimination of Violence Against Women)", category: "Hari Kesehatan Internasional" },
+
+    { date: "2025-12-01", title: "Hari AIDS Sedunia (World AIDS Day)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-12-03", title: "Hari Disabilitas Internasional (International Day of Persons with Disabilities)", category: "Hari Kesehatan Internasional" },
+    { date: "2025-12-12", title: "Hari Cakupan Kesehatan Universal Internasional (International Universal Health Coverage Day)", category: "Hari Kesehatan Internasional" }
+  ];
+
+  // Masukkan libur & hari kesehatan ke EVENTS (tanpa jam)
+  EVENTS.push(...HOLIDAYS_2025, ...HEALTH_DAYS_2025);
+
+  // ====== Utilitas Warna Kategori ======
+  const PALETTE = ["#0ea5e9","#10b981","#f59e0b","#ef4444","#8b5cf6","#14b8a6","#f97316","#06b6d4","#84cc16","#eab308","#22c55e","#3b82f6"];
+  const categoryColorCache = new Map();
+  function colorForCategory(cat){
+    if(!cat) return "#9ca3af";
+    if(categoryColorCache.has(cat)) return categoryColorCache.get(cat);
+    let h=0; for(let i=0;i<cat.length;i++){h=(h*31 + cat.charCodeAt(i))>>>0}
+    const isHoliday = /libur|cuti/i.test(cat);
+    const isHKN = /nasional/i.test(cat);
+    const color = isHoliday ? '#dc2626' : (isHKN ? '#0ea5e9' : PALETTE[h % PALETTE.length]);
+    categoryColorCache.set(cat,color); return color;
+  }
+
+  // ====== Index data per tanggal ======
+  function indexEventsByDate(list){
+    const map = new Map();
+    for(const e of list){
+      const key = e.date;
+      if(!map.has(key)) map.set(key,[]);
+      map.get(key).push(e);
+    }
+    for(const [k,arr] of map){
+      arr.sort((a,b)=> (a.time||"99:99").localeCompare(b.time||"99:99"));
+    }
+    return map;
+  }
+
+  // ====== State Kalender & Pencarian ======
+  const today = new Date();
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth(); // 0-11
+
+  const monthLabel = document.getElementById('monthLabel');
+  const calGrid = document.getElementById('calGrid');
+  const detailPanel = document.getElementById('detailPanel');
+  const searchResults = document.getElementById('searchResults');
+  const searchDate = document.getElementById('searchDate');
+  const searchText = document.getElementById('searchText');
+
+  // Toggle toolbar (mobile)
+  const toolbarToggle = document.getElementById('toolbarToggle');
+  const calToolbar = document.getElementById('calToolbar');
+
+  function updateToolbarState(open){
+    if(open){
+      calToolbar.classList.add('open');
+      toolbarToggle?.setAttribute('aria-expanded','true');
+      if (toolbarToggle) toolbarToggle.textContent = 'Tutup Filter ▴';
+    } else {
+      calToolbar.classList.remove('open');
+      toolbarToggle?.setAttribute('aria-expanded','false');
+      if (toolbarToggle) toolbarToggle.textContent = 'Filter ▾';
+    }
+  }
+
+  toolbarToggle?.addEventListener('click', ()=>{
+    const willOpen = !calToolbar.classList.contains('open');
+    updateToolbarState(willOpen);
+  });
+
+  // index pertama kali
+  let eventIndex = indexEventsByDate(EVENTS);
+  function refreshIndex(){ eventIndex = indexEventsByDate(EVENTS); }
+
+  document.getElementById('prevBtn').addEventListener('click',()=>{ shiftMonth(-1); });
+  document.getElementById('nextBtn').addEventListener('click',()=>{ shiftMonth(1); });
+  document.getElementById('todayBtn').addEventListener('click',()=>{ viewYear=today.getFullYear(); viewMonth=today.getMonth(); render(); selectDate(fmtDate(today)); });
+
+  document.getElementById('searchBtn').addEventListener('click', handleSearch);
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    searchDate.value='';
+    searchText.value='';
+    searchResults.classList.remove('active');
+    searchResults.innerHTML='';
+    render();
+    updateToolbarState(false);   // tutup filter setelah reset
+  });
+
+  function handleSearch(){
+    const qDate = searchDate.value;
+    const qText = (searchText.value||'').trim().toLowerCase();
+
+    const results = [];
+    for(const [date, items] of eventIndex){
+      if(qDate && date!==qDate) continue;
+      for(const e of items){
+        const hay = `${e.title||''} ${e.category||''} ${e.location||''}`.toLowerCase();
+        if(qText && !hay.includes(qText)) continue;
+        results.push(e);
+      }
+    }
+
+    searchResults.classList.add('active');
+    if(results.length===0){
+      searchResults.innerHTML = '<em>Tidak ada hasil sesuai kriteria.</em>';
+      updateToolbarState(false); // tetap tutup filter
+      return;
+    }
+
+    const html = results.map(e => {
+      const col = colorForCategory(e.category);
+      return `<div class="result-item" data-date="${e.date}">
+        <div style="font-weight:700">${e.time||''} ${escapeHtml(e.title)}</div>
+        <div style="font-size:12px;color:#6b7280">${e.date} • ${e.location||'-'} • <span class="dot" style="background:${col}"></span>${e.category||'-'}</div>
+      </div>`
+    }).join('');
+    searchResults.innerHTML = `<div style="font-weight:700;margin-bottom:6px">Hasil: ${results.length} kegiatan</div>` + html;
+
+    searchResults.querySelectorAll('.result-item').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const d = parseISO(el.dataset.date);
+        viewYear=d.getFullYear(); viewMonth=d.getMonth(); render(); selectDate(el.dataset.date);
+        detailPanel.scrollIntoView({behavior:'smooth'});
+      });
+    });
+
+    updateToolbarState(false); // tutup filter setelah cari
+  }
+
+  // ====== Calendar core ======
+  function shiftMonth(delta){
+    viewMonth += delta;
+    if(viewMonth<0){viewMonth=11; viewYear--} else if(viewMonth>11){viewMonth=0; viewYear++}
+    render();
+  }
+
+  function fmtDate(d){
+    const y=d.getFullYear(); const m=(d.getMonth()+1).toString().padStart(2,'0'); const day=d.getDate().toString().padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+  function parseISO(iso){
+    const [y,m,d] = iso.split('-').map(Number);
+    return new Date(y, m-1, d);
+  }
+  function monthNameID(idx){
+    return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][idx];
+  }
+
+  function isISOInMonth(iso, y, m){
+    const d = parseISO(iso);
+    return d.getFullYear()===y && d.getMonth()===m;
+  }
+  function getEventsInMonth(y, m){
+    const list = [];
+    for(const [date, items] of eventIndex){
+      if(isISOInMonth(date, y, m)){
+        items.forEach(e => list.push(e));
+      }
+    }
+    list.sort((a,b)=>{
+      if(a.date!==b.date) return a.date.localeCompare(b.date);
+      return (a.time||'99:99').localeCompare(b.time||'99:99');
+    });
+    return list;
+  }
+
+  function render(){
+    monthLabel.textContent = `${monthNameID(viewMonth)} ${viewYear}`;
+    while(calGrid.children.length>7){ calGrid.removeChild(calGrid.lastChild); }
+
+    const first = new Date(viewYear, viewMonth, 1);
+    const startDow = first.getDay(); // 0=Min
+    const gridStart = new Date(viewYear, viewMonth, 1 - startDow);
+
+    for(let i=0;i<42;i++){
+      const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate()+i);
+      const iso = fmtDate(d);
+      const inMonth = d.getMonth()===viewMonth;
+      const isToday = iso===fmtDate(today);
+
+      const day = document.createElement('div');
+      const isWeekend = d.getDay()===0 || d.getDay()===6;
+      day.className = `day${inMonth?"":" bad-month"}${isToday?" today":""}${isWeekend?" weekend":""}`;
+
+      const btn = document.createElement('button');
+      btn.className = 'day-btn';
+      btn.setAttribute('aria-label', `Tanggal ${d.getDate()} ${monthNameID(d.getMonth())} ${d.getFullYear()}`);
+      btn.addEventListener('click', ()=> selectDate(iso));
+
+      const head = document.createElement('div'); head.className = 'day-head';
+      const num = document.createElement('div'); num.className = 'day-num'; num.textContent = d.getDate();
+      const evts = eventIndex.get(iso) || [];
+      head.appendChild(num);
+
+      const stripes = document.createElement('div'); stripes.className = 'stripes';
+      const MAX_STRIPES = 6;
+      evts.slice(0,MAX_STRIPES).forEach(e => {
+        const s = document.createElement('div'); s.className = 'stripe'; s.style.background = colorForCategory(e.category); stripes.appendChild(s);
+      });
+      if(evts.length>MAX_STRIPES){
+        const more = document.createElement('div'); more.className = 'more'; more.textContent = `+${evts.length-MAX_STRIPES} lainnya`; stripes.appendChild(more);
+      }
+
+      // Badge angka di pojok kanan bawah sel jika ada event
+      if (evts.length > 0) {
+        const badge = document.createElement('span');
+        badge.className = 'agenda-badge';
+        badge.textContent = evts.length;                   // hanya angka
+        badge.setAttribute('aria-label', `${evts.length} agenda`);
+        btn.appendChild(badge);
+      }
+
+      btn.appendChild(head);
+      btn.appendChild(stripes);
+      day.appendChild(btn);
+      calGrid.appendChild(day);
+    }
+  }
+
+  // Tampilkan hanya kegiatan inti Puskesmas pada panel harian
+  function isPuskesmasEvent(e){
+    const c = (e.category || "").toLowerCase().trim();
+    // singkirkan semua hari peringatan & libur/cuti
+    if (/^hari\s/i.test(e.title || "") || /libur|cuti/i.test(c)) return false;
+    if (/internasional|kesehatan nasional|kesehatan internasional/i.test(c)) return false;
+    // whitelist kategori layanan/program puskesmas
+    const ALLOWED = ["layanan","promosi","posbindu","program","manajemen","ukm","posyandu"];
+    return ALLOWED.some(k => c.includes(k));
+  }
+
+  const monthPanelState = {};
+  function monthKey(y,m){ return `${y}-${m}`; }
+
+  // Build HTML daftar program sebulan (tanpa jam, hanya judul/tgl/lokasi/kategori)
+  function buildMonthProgramsHTML(y, m){
+    const monthPrograms = getEventsInMonth(y, m).filter(isPuskesmasEvent);
+    if(!monthPrograms.length) return `<div class="empty">Belum ada program pada bulan ini.</div>`;
+    return `<div class="list">` + monthPrograms.map(e=>{
+      const color = colorForCategory(e.category);
+      return `
+        <div class="list-item" style="border-left-color:${color}">
+          <p class="title">${escapeHtml(e.title)}</p>
+          <div class="meta">${e.date}${e.location?` • ${e.location}`:''} —
+            <span class="dot" style="background:${color}"></span>${e.category||'-'}
+          </div>
+        </div>`;
+    }).join('') + `</div>`;
+  }
+
+  const healthPanelState = {};
+
+  function selectDate(iso){
+    const d = parseISO(iso);
+    const y = d.getFullYear();
+    const m = d.getMonth();
+
+    // data
+    const dayList = (eventIndex.get(iso) || []).filter(isPuskesmasEvent);
+    const monthlyNotes = getMonthlyNotes(m);
+    const healthDaysThisMonth = (typeof HEALTH_DAYS_2025 !== 'undefined')
+      ? HEALTH_DAYS_2025.filter(e => isISOInMonth(e.date, y, m))
+      : [];
+    const holidaysThisMonth = (typeof HOLIDAYS_2025 !== 'undefined')
+      ? HOLIDAYS_2025.filter(e => isISOInMonth(e.date, y, m))
+      : [];
+
+    // Panel kiri A: kegiatan pada tanggal dipilih (dengan jam)
+    const dayPanel = `
+      <div class="panel">
+        <div class="panel-head">Kegiatan pada ${d.getDate()} ${monthNameID(m)} ${y}</div>
+        <div class="panel-body">
+          ${
+            dayList.length
+            ? dayList.map(e=>{
+                const color = colorForCategory(e.category);
+                return `
+                  <div class="event" style="border-left-color:${color}">
+                    <div class="event-time">${e.time||'—'}</div>
+                    <div>
+                      <p class="event-title">${escapeHtml(e.title)}</p>
+                      <div class="event-meta">${e.date}${e.location?` • ${e.location}`:''} —
+                        <span class="dot" style="background:${color}"></span>${e.category||'-'}
+                      </div>
+                    </div>
+                  </div>`;
+              }).join('')
+            : `<div class="empty">Tidak ada kegiatan pada tanggal ini.</div>`
+          }
+        </div>
+      </div>`;
+
+    // Panel kiri B: Program Bulan Ini (collapsible)
+    const key = monthKey(y,m);
+    const isOpen = !!monthPanelState[key];
+    const monthPanel = `
+      <div class="panel collapsible ${isOpen?'open':''}" id="monthPanel">
+        <div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span>Program Bulan ${monthNameID(m)} ${y}</span>
+          <button class="toggle-btn ${isOpen?'active':''}" data-role="toggle-month">
+            ${isOpen ? 'Sembunyikan' : 'Tampilkan'}
+          </button>
+        </div>
+        <div class="panel-body">
+          ${buildMonthProgramsHTML(y, m)}
+        </div>
+      </div>`;
+
+    // Kolom kanan: keterangan bulan, hari kesehatan, libur/cuti
+    let rightBlocks = '';
+    if (monthlyNotes.length){
+      rightBlocks += `
+        <div class="panel">
+          <div class="panel-head">Keterangan Bulan</div>
+          <div class="panel-body">
+            ${monthlyNotes.map(note=>{
+              const col = colorForCategory(note.category);
+              return `
+                <div class="event" style="border-left-color:${col}">
+                  <div class="event-time">—</div>
+                  <div>
+                    <p class="event-title">${escapeHtml(note.title)}</p>
+                    <div class="event-meta">Kegiatan berlangsung sepanjang bulan</div>
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+    }
+
+    // Hari Kesehatan (collapsible)
+    const hKey = monthKey(y,m);
+    const isHOpen = !!healthPanelState[hKey];
+    const healthListHTML = healthDaysThisMonth.length ? healthDaysThisMonth.map(e=>{
+      const col = colorForCategory(e.category);
+      return `
+        <div class="event" style="border-left-color:${col}">
+          <div class="event-time">—</div>
+          <div>
+            <p class="event-title">${escapeHtml(e.title)}</p>
+            <div class="event-meta">${e.date} — <span class="dot" style="background:${col}"></span>${e.category}</div>
+          </div>
+        </div>`;
+    }).join('') : `<div class="empty">Tidak ada hari kesehatan pada bulan ini.</div>`;
+    rightBlocks += `
+      <div class="panel collapsible ${isHOpen?'open':''}" id="healthPanel">
+        <div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span>Hari Kesehatan Bulan ${monthNameID(m)} ${y}</span>
+          <button class="toggle-btn ${isHOpen?'active':''}" data-role="toggle-health">
+            ${isHOpen ? 'Sembunyikan' : 'Tampilkan'}
+          </button>
+        </div>
+        <div class="panel-body">${healthListHTML}</div>
+      </div>`;
+
+    const holidayHTML = holidaysThisMonth.length ? holidaysThisMonth.map(e=>{
+      const col = colorForCategory(e.category);
+      return `
+        <div class="event" style="border-left-color:${col}">
+          <div class="event-time">—</div>
+          <div>
+            <p class="event-title">${escapeHtml(e.title)}</p>
+            <div class="event-meta">${e.date} — <span class="dot" style="background:${col}"></span>${e.category}</div>
+          </div>
+        </div>`;
+    }).join('') : `<div class="empty">Tidak ada libur/cuti pada bulan ini.</div>`;
+    rightBlocks += `
+      <div class="panel">
+        <div class="panel-head">Tanggal Merah & Cuti Bersama</div>
+        <div class="panel-body">${holidayHTML}</div>
+      </div>`;
+
+    // Render
+    detailPanel.classList.add('active');
+    detailPanel.innerHTML = `
+      <h3 style="margin:0 0 8px 0">${d.getDate()} ${monthNameID(m)} ${y}</h3>
+      <div class="detail-columns">
+        <div>
+          ${dayPanel}
+          ${monthPanel}
+        </div>
+        <div class="panel-stack">
+          ${rightBlocks}
+        </div>
+      </div>
+    `;
+
+    // Pasang handler toggle
+    const tBtn = detailPanel.querySelector('[data-role="toggle-month"]');
+    const mPanel = detailPanel.querySelector('#monthPanel');
+    if(tBtn && mPanel){
+      tBtn.addEventListener('click', ()=>{
+        const next = !mPanel.classList.contains('open');
+        mPanel.classList.toggle('open', next);
+        tBtn.classList.toggle('active', next);
+        tBtn.textContent = next ? 'Sembunyikan' : 'Tampilkan';
+        monthPanelState[key] = next; // simpan status per bulan
+      });
+    }
+
+    const thBtn = detailPanel.querySelector('[data-role="toggle-health"]');
+    const hPanel = detailPanel.querySelector('#healthPanel');
+    if(thBtn && hPanel){
+      thBtn.addEventListener('click', ()=>{
+        const next = !hPanel.classList.contains('open');
+        hPanel.classList.toggle('open', next);
+        thBtn.classList.toggle('active', next);
+        thBtn.textContent = next ? 'Sembunyikan' : 'Tampilkan';
+        healthPanelState[hKey] = next;
+      });
+    }
+
+    if (window.innerWidth < 700) {
+      detailPanel.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s])); }
+
+  // ===== Render awal =====
+  refreshIndex();
+  render();
+  const todayISO = (function(){ const n=new Date(); return fmtDate(n); })();
+  if(eventIndex.has(todayISO)) selectDate(todayISO);
+  </script>
+
 </body>
 </html>
